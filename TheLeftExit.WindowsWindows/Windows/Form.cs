@@ -25,7 +25,7 @@ public class Form : Window
 
     private static nint FormWndProc(nint hWnd, WM uMsg, nuint wParam, nint lParam)
     {
-        return ((Form)(createdWindow ?? windows[hWnd])).WndProc(hWnd, uMsg, wParam, lParam);
+        return ((Form)(windows.GetValueOrDefault(hWnd) ?? createdWindows.Peek())).WndProc(hWnd, uMsg, wParam, lParam);
     }
 
     protected virtual nint WndProc(nint hWnd, WM uMsg, nuint wParam, nint lParam)

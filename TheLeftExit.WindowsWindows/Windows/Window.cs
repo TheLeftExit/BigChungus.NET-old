@@ -8,11 +8,11 @@ using System.Runtime.InteropServices;
 public partial class Window
 {
     protected static Dictionary<nint, Window> windows = new();
-    protected static Window createdWindow; // Allows handling of WM_CREATE/WM_NCCREATE in WndProc in forms
+    protected static Stack<Window> createdWindows = new(); // Allows handling of WM_CREATE/WM_NCCREATE in WndProc in forms
 
     public unsafe Window(ReadOnlySpan<char> className)
     {
-        createdWindow = this;
+        createdWindows.Push(this);
         fixed (char* classNamePtr = className)
         {
             Handle = User32.CreateWindowEx(
@@ -30,7 +30,7 @@ public partial class Window
                 default
             );
         }
-        createdWindow = null;
+        createdWindows.Pop();
         windows.Add(Handle, this);
     }
 
