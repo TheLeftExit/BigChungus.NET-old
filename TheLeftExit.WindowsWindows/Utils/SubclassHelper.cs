@@ -7,9 +7,6 @@ public static class SubclassHelper
 
 public class SubclassHandle : IDisposable
 {
-    [ThreadStatic]
-    private static HashSet<SubclassHandle> handles = new();
-    
     private nint handle;
     private CustomWndProc customWndProc;
     private nint defaultWndProcPtr;
@@ -17,11 +14,10 @@ public class SubclassHandle : IDisposable
     public SubclassHandle(nint handle, CustomWndProc wndProc)
     {
         this.handle = handle;
-        defaultWndProcPtr = User32.GetWindowLongPtr(handle, WINDOW_LONG_PTR_INDEX.GWLP_WNDPROC);
+        defaultWndProcPtr = PInvoke.GetWindowLongPtr(handle, WINDOW_LONG_PTR_INDEX.GWLP_WNDPROC);
         customWndProc = wndProc;
         var subclassedWndProcPtr = Marshal.GetFunctionPointerForDelegate<WNDPROC>(WndProc);
-        User32.SetWindowLongPtr(handle, WINDOW_LONG_PTR_INDEX.GWLP_WNDPROC, subclassedWndProcPtr);
-        handles.Add(this);
+        PInvoke.SetWindowLongPtr(handle, WINDOW_LONG_PTR_INDEX.GWLP_WNDPROC, subclassedWndProcPtr);
     }
 
     private nint WndProc(nint hWnd, WM uMsg, nuint wParam, nint lParam)
@@ -33,18 +29,16 @@ public class SubclassHandle : IDisposable
             WParam = wParam,
             LParam = lParam
         };
-        
         var result = customWndProc(args);
         if (uMsg == WM.NCDESTROY) Dispose();
         return result;
     }
 
-    private nint CallWindowProc(nint hWnd, WM uMsg, nuint wParam, nint lParam) => User32.CallWindowProc(defaultWndProcPtr, hWnd, uMsg, wParam, lParam);
+    private nint CallWindowProc(nint hWnd, WM uMsg, nuint wParam, nint lParam) => PInvoke.CallWindowProc(defaultWndProcPtr, hWnd, uMsg, wParam, lParam);
 
     public void Dispose()
     {
-        User32.SetWindowLongPtr(handle, WINDOW_LONG_PTR_INDEX.GWLP_WNDPROC, defaultWndProcPtr);
-        handles.Remove(this);
+        PInvoke.SetWindowLongPtr(handle, WINDOW_LONG_PTR_INDEX.GWLP_WNDPROC, defaultWndProcPtr);
     }
 }
 

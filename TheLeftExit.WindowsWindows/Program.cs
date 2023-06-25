@@ -1,11 +1,11 @@
-﻿using System.Diagnostics;
+﻿[assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
 
-[assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
+Application.EnableVisualStyles();
+Application.SetFont("Segoe UI", -12);
 
 var mainWindow = new Form1();
-
 mainWindow.Show();
-MessageLoop.Run();
+Application.Run();
 
 public class Form1 : Form
 {
@@ -14,12 +14,10 @@ public class Form1 : Form
     
     public Form1()
     {
-        Style = WINDOW_STYLE.WS_OVERLAPPEDWINDOW;
-        ExStyle = WINDOW_EX_STYLE.WS_EX_OVERLAPPEDWINDOW;
         Text = "Hello world!";
         Bounds = new System.Drawing.Rectangle(10, 10, 300, 200);
         
-        button1 = new Window("Button")
+        button1 = new AnyWindow("BUTTON")
         {
             Text = "Click me!",
             Style = WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE,
@@ -27,7 +25,7 @@ public class Form1 : Form
             Parent = this
         };
 
-        button2 = new Window("Button")
+        button2 = new AnyWindow("BUTTON")
         {
             Text = "Don't click me!",
             Style = WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE,
@@ -37,7 +35,11 @@ public class Form1 : Form
 
         SubclassHelper.Subclass(button2, args =>
         {
-            if (args.Message == WM.LBUTTONDOWN) Text = "Subclassing successful";
+            if (args.Message == WM.LBUTTONUP)
+            {
+                Application.SetFont("Comic Sans MS", -12);
+                Text = "Subclassing successful";
+            }
             return args.DefaultWndProc(args.Handle, args.Message, args.WParam, args.LParam);
         });
     }
@@ -60,7 +62,7 @@ public class Form1 : Form
                 Destroy();
                 break;
             case WM.DESTROY:
-                MessageLoop.Quit();
+                Application.Quit();
                 break;
         }
         return base.WndProc(hWnd, uMsg, wParam, lParam);

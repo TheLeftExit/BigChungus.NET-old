@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 public class Form : Window
 {
     private const string className = "Form";
-    
-    static unsafe Form()
+
+    private static unsafe void RegisterFormClass()
     {
         fixed (char* classNamePtr = className)
         {
@@ -14,24 +14,43 @@ public class Form : Window
             {
                 cbSize = (uint)sizeof(WNDCLASSEXW),
                 style = WNDCLASS_STYLES.CS_DBLCLKS | WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW,
-                hbrBackground = User32.GetSysColorBrush(SYS_COLOR_INDEX.COLOR_BTNFACE),
+                hbrBackground = PInvoke.GetSysColorBrush(SYS_COLOR_INDEX.COLOR_BTNFACE),
                 lpszClassName = classNamePtr,
                 lpfnWndProc = Marshal.GetFunctionPointerForDelegate<WNDPROC>(FormWndProc),
-                hInstance = InstanceHandleHelper.GetHandle()
+                hInstance = Application.Handle
             };
-            if (User32.RegisterClassEx(wndClassEx) == 0) throw new ApplicationException();
+            PInvoke.RegisterClassEx(wndClassEx);
         }
+    }
+    
+    static unsafe Form()
+    {
+        RegisterFormClass();
     }
 
     private static nint FormWndProc(nint hWnd, WM uMsg, nuint wParam, nint lParam)
     {
-        return ((Form)(windows.GetValueOrDefault(hWnd) ?? createdWindows.Peek())).WndProc(hWnd, uMsg, wParam, lParam);
+        var form = (Form)(windows.GetValueOrDefault(hWnd) ?? createdWindows.Peek());
+        return form.WndProc(hWnd, uMsg, wParam, lParam);
     }
 
     protected virtual nint WndProc(nint hWnd, WM uMsg, nuint wParam, nint lParam)
     {
-        return User32.DefWindowProc(hWnd, uMsg, wParam, lParam);
+        return PInvoke.DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
 
-    public Form() : base(className) { }
+    protected override nint CreateHandle()
+    {
+        return CreateWindow(
+            WINDOW_EX_STYLE.WS_EX_OVERLAPPEDWINDOW,
+            className,
+            default,
+            WINDOW_STYLE.WS_OVERLAPPEDWINDOW,
+            PInvoke.CW_USEDEFAULT,
+            PInvoke.CW_USEDEFAULT,
+            PInvoke.CW_USEDEFAULT,
+            PInvoke.CW_USEDEFAULT,
+            default
+        );
+    }
 }

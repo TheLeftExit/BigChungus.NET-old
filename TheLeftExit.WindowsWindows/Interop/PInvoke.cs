@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 
 public delegate nint WNDPROC(nint hWnd, WM msg, nuint wParam, nint lParam);
 
-public static unsafe partial class User32
+public static unsafe partial class PInvoke
 {
     [LibraryImport("user32.dll", EntryPoint = "DefWindowProcW")]
     public static partial nint DefWindowProc(nint hWnd, WM uMsg, nuint wParam, nint lParam);
@@ -74,6 +74,31 @@ public static unsafe partial class User32
 
     [LibraryImport("user32.dll")]
     public static partial nint SetParent(nint hWndChild, nint hWndNewParent);
+
+    [LibraryImport("kernel32.dll", EntryPoint = "GetModuleHandleExW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static unsafe partial bool GetModuleHandleEx(uint dwFlags, nuint lpModuleName, out nint phModule);
+
+    [LibraryImport("comctl32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static unsafe partial bool InitCommonControlsEx(in INITCOMMONCONTROLSEX picce);
+
+    [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
+    public static unsafe partial nint SendMessage(nint hWnd, WM Msg, nuint wParam, nint lParam);
+
+    [LibraryImport("gdi32.dll", EntryPoint = "CreateFontW")]
+    public static unsafe partial nint CreateFont(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, uint bItalic, uint bUnderline, uint bStrikeOut, uint iCharSet, uint iOutPrecision, uint iClipPrecision, uint iQuality, uint iPitchAndFamily, char* pszFaceName);
+
+    [LibraryImport("gdi32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static unsafe partial bool DeleteObject(nint hObject);
+
+    [LibraryImport("kernel32.dll", EntryPoint = "CreateActCtxW")]
+    public static unsafe partial nint CreateActCtx(in ACTCTXW pActCtx);
+
+    [LibraryImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static unsafe partial bool ActivateActCtx(nint hActCtx, out nuint lpCookie);
 }
 
 [Flags]
@@ -559,4 +584,45 @@ public enum WM : uint
     REFLECT_CTLCOLOREDIT = REFLECT + CTLCOLOREDIT,
     REFLECT_CTLCOLORLISTBOX = REFLECT + CTLCOLORLISTBOX,
     REFLECT_CTLCOLORSTATIC = REFLECT + CTLCOLORSTATIC
+}
+
+public struct INITCOMMONCONTROLSEX
+{
+    public uint dwSize;
+    public INITCOMMONCONTROLSEX_ICC dwICC;
+}
+
+[Flags]
+public enum INITCOMMONCONTROLSEX_ICC : uint
+{
+    ICC_ANIMATE_CLASS = 0x00000080,
+    ICC_BAR_CLASSES = 0x00000004,
+    ICC_COOL_CLASSES = 0x00000400,
+    ICC_DATE_CLASSES = 0x00000100,
+    ICC_HOTKEY_CLASS = 0x00000040,
+    ICC_INTERNET_CLASSES = 0x00000800,
+    ICC_LINK_CLASS = 0x00008000,
+    ICC_LISTVIEW_CLASSES = 0x00000001,
+    ICC_NATIVEFNTCTL_CLASS = 0x00002000,
+    ICC_PAGESCROLLER_CLASS = 0x00001000,
+    ICC_PROGRESS_CLASS = 0x00000020,
+    ICC_STANDARD_CLASSES = 0x00004000,
+    ICC_TAB_CLASSES = 0x00000008,
+    ICC_TREEVIEW_CLASSES = 0x00000002,
+    ICC_UPDOWN_CLASS = 0x00000010,
+    ICC_USEREX_CLASSES = 0x00000200,
+    ICC_WIN95_CLASSES = 0x000000FF,
+}
+
+public unsafe struct ACTCTXW
+{
+    internal uint cbSize;
+    internal uint dwFlags;
+    internal char* lpSource;
+    internal ushort wProcessorArchitecture;
+    internal ushort wLangId;
+    internal char* lpAssemblyDirectory;
+    internal char* lpResourceName;
+    internal char* lpApplicationName;
+    internal nint hModule;
 }
