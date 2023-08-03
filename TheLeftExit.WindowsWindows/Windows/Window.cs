@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿using System.ComponentModel;
+using System.Drawing;
+using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 
 public abstract class Window
 {
@@ -38,35 +41,6 @@ public abstract class Window
 
     protected abstract nint CreateHandle();
 
-    protected unsafe nint CreateWindow(WINDOW_EX_STYLE exStyle, ReadOnlySpan<char> className, ReadOnlySpan<char> windowName, WINDOW_STYLE style, int X, int Y, int nWidth, int nHeight, nint hWndParent)
-    {
-        fixed (char* classNamePtr = className)
-        {
-            fixed (char* windowNamePtr = windowName)
-            {
-                var handle = PInvoke.CreateWindowEx(
-                    exStyle,
-                    classNamePtr,
-                    windowNamePtr,
-                    style,
-                    X,
-                    Y,
-                    nWidth,
-                    nHeight,
-                    hWndParent,
-                    default,
-                    Application.Handle,
-                    default
-                );
-                if (handle == 0)
-                {
-                    throw new ApplicationException();
-                }
-                return handle;
-            }
-        }
-    }
-
     public nint Handle { get; }
 
     internal static void Broadcast(WM uMsg, nuint wParam, nint lParam)
@@ -78,56 +52,38 @@ public abstract class Window
         }
     }
 
-    public void Show(SHOW_WINDOW_CMD showMode = SHOW_WINDOW_CMD.SW_SHOW) => PInvoke.ShowWindow(Handle, showMode);
-    public void Update() => PInvoke.UpdateWindow(Handle);
-    public void Destroy() => PInvoke.DestroyWindow(Handle);
+    public void Show(SHOW_WINDOW_CMD showMode = SHOW_WINDOW_CMD.SW_SHOW) => WindowCommon.Show(Handle, showMode);
+    public void Update() => WindowCommon.Update(Handle);
+    public void Destroy() => WindowCommon.Destroy(Handle);
 
     public WINDOW_STYLE Style
     {
-        get => (WINDOW_STYLE)PInvoke.GetWindowLongPtr(Handle, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
-        set => PInvoke.SetWindowLongPtr(Handle, WINDOW_LONG_PTR_INDEX.GWL_STYLE, (long)value);
+        get => WindowCommon.GetStyle(Handle);
+        set => WindowCommon.SetStyle(Handle, value);
     }
 
     public WINDOW_EX_STYLE ExStyle
     {
-        get => (WINDOW_EX_STYLE)PInvoke.GetWindowLongPtr(Handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
-        set => PInvoke.SetWindowLongPtr(Handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, (long)value);
+        get => WindowCommon.GetExStyle(Handle);
+        set => WindowCommon.SetExStyle(Handle, value);
     }
 
     public Window Parent
     {
-        get => windows[PInvoke.GetWindowLongPtr(Handle, WINDOW_LONG_PTR_INDEX.GWLP_HWNDPARENT)];
-        set => PInvoke.SetParent(Handle, value.Handle);
+        get => windows[WindowCommon.GetParent(Handle)];
+        set => WindowCommon.SetParent(Handle, value.Handle);
     }
 
     public unsafe string Text
     {
-        get
-        {
-            var length = PInvoke.GetWindowTextLength(Handle);
-            var buffer = stackalloc char[length];
-            PInvoke.GetWindowText(Handle, buffer, length);
-            return new string(buffer);
-        }
-        set
-        {
-            fixed (char* ptr = value)
-            {
-                PInvoke.SetWindowText(Handle, ptr);
-            }
-        }
+        get => WindowCommon.GetText(Handle);
+        set => WindowCommon.SetText(Handle, value);
     }
 
     public Rectangle Bounds
     {
-        get
-        {
-            PInvoke.GetWindowRect(Handle, out var result);
-            return result.ToRectangle();
-        }
-        set
-        {
-            PInvoke.MoveWindow(Handle, value.X, value.Y, value.Width, value.Height, true);
-        }
+        get => WindowCommon.GetBounds(Handle);
+        set => WindowCommon.SetBounds(Handle, value);
     }
 }
+

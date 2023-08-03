@@ -11,6 +11,7 @@ public class Form1 : Form
 {
     Window button1;
     Window button2;
+    Subclass button1Subclass;
     
     public Form1()
     {
@@ -33,27 +34,27 @@ public class Form1 : Form
             Parent = this
         };
 
-        SubclassHelper.Subclass(button2, args =>
+        button1Subclass = WindowProcedure.Subclass(button2.Handle, (args, defWndProc) =>
         {
             if (args.Message == WM.LBUTTONUP)
             {
                 Application.SetFont("Comic Sans MS", -12);
                 Text = "Subclassing successful";
             }
-            return args.DefaultWndProc(args.Handle, args.Message, args.WParam, args.LParam);
+            return defWndProc(args);
         });
     }
     
-    protected override nint WndProc(nint hWnd, WM uMsg, nuint wParam, nint lParam)
+    protected override nint WndProc(WindowProcedureArgs args)
     {
-        switch (uMsg)
+        switch (args.Message)
         {
             case WM.COMMAND:
-                if (lParam == button1.Handle)
+                if (args.LParam == button1.Handle)
                 {
                     button1.Text = "Good job!";
                 }
-                else if (lParam == button2.Handle)
+                else if (args.LParam == button2.Handle)
                 {
                     button2.Text = ">:(";
                 }
@@ -65,6 +66,6 @@ public class Form1 : Form
                 Application.Quit();
                 break;
         }
-        return base.WndProc(hWnd, uMsg, wParam, lParam);
+        return base.WndProc(args);
     }
 }

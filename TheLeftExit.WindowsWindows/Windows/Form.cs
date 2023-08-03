@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿
 using System.Runtime.InteropServices;
 
 public class Form : Window
@@ -28,29 +27,19 @@ public class Form : Window
         RegisterFormClass();
     }
 
-    private static nint FormWndProc(nint hWnd, WM uMsg, nuint wParam, nint lParam)
+    private static nint FormWndProc(nint hWnd, WM msg, nint wParam, nint lParam)
     {
         var form = (Form)(windows.GetValueOrDefault(hWnd) ?? createdWindows.Peek());
-        return form.WndProc(hWnd, uMsg, wParam, lParam);
+        return form.WndProc(new(hWnd, msg, wParam, lParam));
     }
 
-    protected virtual nint WndProc(nint hWnd, WM uMsg, nuint wParam, nint lParam)
+    protected virtual nint WndProc(WindowProcedureArgs args)
     {
-        return PInvoke.DefWindowProc(hWnd, uMsg, wParam, lParam);
+        return WindowProcedure.Default(args);
     }
 
     protected override nint CreateHandle()
     {
-        return CreateWindow(
-            WINDOW_EX_STYLE.WS_EX_OVERLAPPEDWINDOW,
-            className,
-            default,
-            WINDOW_STYLE.WS_OVERLAPPEDWINDOW,
-            PInvoke.CW_USEDEFAULT,
-            PInvoke.CW_USEDEFAULT,
-            PInvoke.CW_USEDEFAULT,
-            PInvoke.CW_USEDEFAULT,
-            default
-        );
+        return WindowCommon.Create(className, WINDOW_EX_STYLE.WS_EX_OVERLAPPEDWINDOW, WINDOW_STYLE.WS_OVERLAPPEDWINDOW);
     }
 }

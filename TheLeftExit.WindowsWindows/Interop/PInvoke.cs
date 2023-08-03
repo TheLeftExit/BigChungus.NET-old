@@ -1,13 +1,12 @@
 ﻿using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
-public delegate nint WNDPROC(nint hWnd, WM msg, nuint wParam, nint lParam);
+public delegate nint WNDPROC(nint hWnd, WM msg, nint wParam, nint lParam);
 
 public static unsafe partial class PInvoke
 {
     [LibraryImport("user32.dll", EntryPoint = "DefWindowProcW")]
-    public static partial nint DefWindowProc(nint hWnd, WM uMsg, nuint wParam, nint lParam);
+    public static partial nint DefWindowProc(nint hWnd, WM msg, nint wParam, nint lParam);
 
     [LibraryImport("user32.dll", EntryPoint = "GetMessageW")]
     public static partial int GetMessage(out MSG lpMsg, nint hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
@@ -70,7 +69,7 @@ public static unsafe partial class PInvoke
     public static partial int GetWindowTextLength(nint hWnd);
 
     [LibraryImport("user32.dll", EntryPoint = "CallWindowProcW")]
-    public static partial nint CallWindowProc(nint lpPrevWndFunc, nint hWnd, WM Msg, nuint wParam, nint lParam);
+    public static partial nint CallWindowProc(nint lpPrevWndFunc, nint hWnd, WM msg, nint wParam, nint lParam);
 
     [LibraryImport("user32.dll")]
     public static partial nint SetParent(nint hWndChild, nint hWndNewParent);
@@ -262,12 +261,13 @@ public enum SYS_COLOR_INDEX
 [StructLayout(LayoutKind.Sequential)]
 public struct MSG
 {
-    public nint hwnd;
-    public WM message;
-    public nuint wParam;
-    public nint lParam;
-    public uint time;
-    public Point pt;
+    private nint hwnd;
+    private WM message;
+    private nuint wParam;
+    private nint lParam;
+    private uint time;
+    private Point pt;
+    private int lPrivate;
 }
 
 public enum WINDOW_LONG_PTR_INDEX
