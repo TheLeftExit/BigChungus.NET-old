@@ -1,4 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using BigChungus.Interop;
+using System.Runtime.InteropServices;
+
+namespace BigChungus.Utils;
 
 public static class WindowProcedure
 {

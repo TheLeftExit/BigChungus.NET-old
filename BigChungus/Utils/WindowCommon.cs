@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿using BigChungus.Interop;
+using System.Drawing;
+
+namespace BigChungus.Utils;
 
 public static class WindowCommon
 {

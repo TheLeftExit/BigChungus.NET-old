@@ -1,6 +1,10 @@
 ﻿using System.Drawing;
 using System.Runtime.InteropServices;
 
+[assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
+
+namespace BigChungus.Interop;
+
 public delegate nint WNDPROC(nint hWnd, WM msg, nint wParam, nint lParam);
 
 public static unsafe partial class PInvoke

@@ -1,4 +1,8 @@
-﻿[assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
+﻿using BigChungus.Interop;
+using BigChungus.Utils;
+using BigChungus.Windows;
+
+[assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
 
 Application.EnableVisualStyles();
 Application.SetFont("Segoe UI", -12);
@@ -7,17 +11,16 @@ var mainWindow = new Form1();
 mainWindow.Show();
 Application.Run();
 
-public class Form1 : Form
-{
+public class Form1 : Form {
     Window button1;
     Window button2;
     Subclass button1Subclass;
-    
+
     public Form1()
     {
         Text = "Hello world!";
         Bounds = new System.Drawing.Rectangle(10, 10, 300, 200);
-        
+
         button1 = new AnyWindow("BUTTON")
         {
             Text = "Click me!",
@@ -44,7 +47,7 @@ public class Form1 : Form
             return defWndProc(args);
         });
     }
-    
+
     protected override nint WndProc(WindowProcedureArgs args)
     {
         switch (args.Message)
@@ -53,8 +56,7 @@ public class Form1 : Form
                 if (args.LParam == button1.Handle)
                 {
                     button1.Text = "Good job!";
-                }
-                else if (args.LParam == button2.Handle)
+                } else if (args.LParam == button2.Handle)
                 {
                     button2.Text = ">:(";
                 }

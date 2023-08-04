@@ -1,5 +1,8 @@
-﻿
+﻿using BigChungus.Interop;
+using BigChungus.Utils;
 using System.Runtime.InteropServices;
+
+namespace BigChungus.Windows;
 
 public class Form : Window
 {

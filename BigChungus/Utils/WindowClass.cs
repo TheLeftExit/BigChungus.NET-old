@@ -1,4 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using BigChungus.Interop;
+using System.Runtime.InteropServices;
+
+namespace BigChungus.Utils;
 
 public class WindowClass {
     public unsafe Class Register(ReadOnlySpan<char> className, WindowProcedureFunction windowProcedure, WNDCLASS_STYLES style = default, bool enableBackgroundBrush = true)

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<PublishAot>true</PublishAot>
+		<PlatformTarget>x64</PlatformTarget>
+		<LangVersion>preview</LangVersion>
+		<PackageId>BigChungus.NET</PackageId>
+		<Title>BigChungus.NET</Title>
+		<Version>0.1.0</Version>
+		<Authors>TheLeftExit</Authors>
+		<Description>NativeAOT-compatible managed wrappers around Win32 controls.</Description>
+		<PackageLicenseExpression>Unlicense</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/TheLeftExit/BigChungus.NET</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/TheLeftExit/BigChungus.NET</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
+
+</Project>

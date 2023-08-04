@@ -1,4 +1,9 @@
-﻿public static class Application
+﻿using BigChungus.Interop;
+using BigChungus.Windows;
+
+namespace BigChungus.Utils;
+
+public static class Application
 {
     public static void Run()
     {
