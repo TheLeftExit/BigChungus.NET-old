@@ -1,10 +1,21 @@
-﻿using BigChungus.Interop;
+﻿using BigChungus.Common;
+using BigChungus.Unmanaged;
 using System.Drawing;
 
-namespace BigChungus.Utils;
+namespace BigChungus.Managed;
 
 public static class WindowCommon
 {
+    public static nint GetFont(nint handle)
+    {
+        return PInvoke.SendMessage(handle, WM.GETFONT, 0, 0);
+    }
+
+    public static void SetFont(nint handle, nint fontHandle)
+    {
+        PInvoke.SendMessage(handle, WM.SETFONT, fontHandle, 1);
+    }
+    
     public static Rectangle GetBounds(nint handle)
     {
         var returnValue = PInvoke.GetWindowRect(handle, out var result);
@@ -90,7 +101,7 @@ public static class WindowCommon
         PInvoke.DestroyWindow(handle);
     }
 
-    public static unsafe nint Create(ReadOnlySpan<char> className, WINDOW_EX_STYLE exStyle = default, WINDOW_STYLE style = default, ReadOnlySpan<char> windowName = default, int X = PInvoke.CW_USEDEFAULT, int Y = PInvoke.CW_USEDEFAULT, int nWidth = PInvoke.CW_USEDEFAULT, int nHeight = PInvoke.CW_USEDEFAULT, nint hWndParent = default)
+    public static unsafe nint Create(ReadOnlySpan<char> className, WINDOW_EX_STYLE exStyle = default, WINDOW_STYLE style = default, ReadOnlySpan<char> windowName = default, int x = PInvoke.CW_USEDEFAULT, int y = PInvoke.CW_USEDEFAULT, int width = PInvoke.CW_USEDEFAULT, int height = PInvoke.CW_USEDEFAULT, nint parentHandle = default)
     {
         fixed (char* classNamePtr = className)
         {
@@ -101,11 +112,11 @@ public static class WindowCommon
                     classNamePtr,
                     windowNamePtr,
                     style,
-                    X,
-                    Y,
-                    nWidth,
-                    nHeight,
-                    hWndParent,
+                    x,
+                    y,
+                    width,
+                    height,
+                    parentHandle,
                     default,
                     Application.Handle,
                     default

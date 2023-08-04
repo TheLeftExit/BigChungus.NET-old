@@ -1,116 +1,8 @@
-﻿using System.Drawing;
-using System.Runtime.InteropServices;
+﻿namespace BigChungus.Common;
 
-[assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
-
-namespace BigChungus.Interop;
-
-public delegate nint WNDPROC(nint hWnd, WM msg, nint wParam, nint lParam);
-
-public static unsafe partial class PInvoke
-{
-    [LibraryImport("user32.dll", EntryPoint = "DefWindowProcW")]
-    public static partial nint DefWindowProc(nint hWnd, WM msg, nint wParam, nint lParam);
-
-    [LibraryImport("user32.dll", EntryPoint = "GetMessageW")]
-    public static partial int GetMessage(out MSG lpMsg, nint hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool TranslateMessage(in MSG lpMsg);
-
-    [LibraryImport("user32.dll", EntryPoint = "DispatchMessageW")]
-    public static partial nint DispatchMessage(in MSG lpMsg);
-
-    [LibraryImport("user32.dll")]
-    public static partial void PostQuitMessage(int nExitCode);
-
-    [LibraryImport("user32.dll")]
-    public static partial nint GetSysColorBrush(SYS_COLOR_INDEX nIndex);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool ShowWindow(nint hWnd, SHOW_WINDOW_CMD nCmdShow);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool UpdateWindow(nint hWnd);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool DestroyWindow(nint hWnd);
-
-    [LibraryImport("user32.dll", EntryPoint = "RegisterClassExW")]
-    public static partial ushort RegisterClassEx(in WNDCLASSEXW wndClassEx);
-
-    [LibraryImport("user32.dll", EntryPoint = "UnregisterClassW")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool UnregisterClass(char* lpClassName, nint hInstance);
-
-    [LibraryImport("user32.dll", EntryPoint = "CreateWindowExW")]
-    public static partial nint CreateWindowEx(WINDOW_EX_STYLE dwExStyle, char* lpClassName, char* lpWindowName, WINDOW_STYLE dwStyle, int X, int Y, int nWidth, int nHeight, nint hWndParent, nint hMenu, nint hInstance, void* lpParam);
-
-    public const int CW_USEDEFAULT = unchecked((int)0x80000000);
-
-    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
-    public static partial nint GetWindowLongPtr(nint hWnd, WINDOW_LONG_PTR_INDEX nIndex);
-    
-    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
-    public static partial nint SetWindowLongPtr(nint hWnd, WINDOW_LONG_PTR_INDEX nIndex, long dwNewLong);
-
-    [LibraryImport("user32.dll", EntryPoint = "SetWindowTextW")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool SetWindowText(nint hWnd, char* lpString);
-
-    [LibraryImport("user32.dll", EntryPoint = "GetWindowTextW")]
-    public static partial int GetWindowText(nint hWnd, char* lpString, int nMaxCount);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool GetWindowRect(nint hWnd, out RECT lpRect);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool MoveWindow(nint hWnd, int X, int Y, int nWidth, int nHeight, [MarshalAs(UnmanagedType.Bool)] bool bRepaint);
-
-    [LibraryImport("user.dll", EntryPoint = "GetWindowTextLengthW")]
-    public static partial int GetWindowTextLength(nint hWnd);
-
-    [LibraryImport("user32.dll", EntryPoint = "CallWindowProcW")]
-    public static partial nint CallWindowProc(nint lpPrevWndFunc, nint hWnd, WM msg, nint wParam, nint lParam);
-
-    [LibraryImport("user32.dll")]
-    public static partial nint SetParent(nint hWndChild, nint hWndNewParent);
-
-    [LibraryImport("kernel32.dll", EntryPoint = "GetModuleHandleExW")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static unsafe partial bool GetModuleHandleEx(uint dwFlags, nuint lpModuleName, out nint phModule);
-
-    [LibraryImport("comctl32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static unsafe partial bool InitCommonControlsEx(in INITCOMMONCONTROLSEX picce);
-
-    [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
-    public static unsafe partial nint SendMessage(nint hWnd, WM Msg, nuint wParam, nint lParam);
-
-    [LibraryImport("gdi32.dll", EntryPoint = "CreateFontW")]
-    public static unsafe partial nint CreateFont(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, uint bItalic, uint bUnderline, uint bStrikeOut, uint iCharSet, uint iOutPrecision, uint iClipPrecision, uint iQuality, uint iPitchAndFamily, char* pszFaceName);
-
-    [LibraryImport("gdi32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static unsafe partial bool DeleteObject(nint hObject);
-
-    [LibraryImport("kernel32.dll", EntryPoint = "CreateActCtxW")]
-    public static unsafe partial nint CreateActCtx(in ACTCTXW pActCtx);
-
-    [LibraryImport("kernel32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static unsafe partial bool ActivateActCtx(nint hActCtx, out nuint lpCookie);
-}
 
 [Flags]
-public enum WINDOW_EX_STYLE : uint
-{
+public enum WINDOW_EX_STYLE : uint {
     WS_EX_DLGMODALFRAME = 0x00000001,
     WS_EX_NOPARENTNOTIFY = 0x00000004,
     WS_EX_TOPMOST = 0x00000008,
@@ -141,8 +33,7 @@ public enum WINDOW_EX_STYLE : uint
 }
 
 [Flags]
-public enum WINDOW_STYLE : uint
-{
+public enum WINDOW_STYLE : uint {
     WS_OVERLAPPED = 0x00000000,
     WS_POPUP = 0x80000000,
     WS_CHILD = 0x40000000,
@@ -174,8 +65,7 @@ public enum WINDOW_STYLE : uint
 }
 
 [Flags]
-public enum WNDCLASS_STYLES : uint
-{
+public enum WNDCLASS_STYLES : uint {
     CS_VREDRAW = 0x00000001,
     CS_HREDRAW = 0x00000002,
     CS_DBLCLKS = 0x00000008,
@@ -191,24 +81,7 @@ public enum WNDCLASS_STYLES : uint
     CS_DROPSHADOW = 0x00020000,
 }
 
-public unsafe struct WNDCLASSEXW
-{
-    public uint cbSize;
-    public WNDCLASS_STYLES style;
-    public nint lpfnWndProc;
-    public int cbClsExtra;
-    public int cbWndExtra;
-    public nint hInstance;
-    public nint hIcon;
-    public nint hCursor;
-    public nint hbrBackground;
-    public char* lpszMenuName;
-    public char* lpszClassName;
-    public nint hIconSm;
-}
-
-public enum SHOW_WINDOW_CMD : uint
-{
+public enum SHOW_WINDOW_CMD : uint {
     SW_HIDE = 0U,
     SW_SHOWNORMAL = 1U,
     SW_NORMAL = 1U,
@@ -226,8 +99,7 @@ public enum SHOW_WINDOW_CMD : uint
     SW_MAX = 11U,
 }
 
-public enum SYS_COLOR_INDEX
-{
+public enum SYS_COLOR_INDEX {
     COLOR_SCROLLBAR = 0,
     COLOR_BACKGROUND = 1,
     COLOR_ACTIVECAPTION = 2,
@@ -266,58 +138,10 @@ public enum SYS_COLOR_INDEX
     COLOR_BTNHILIGHT = 20,
 }
 
-[StructLayout(LayoutKind.Sequential)]
-public struct MSG
-{
-    private nint hwnd;
-    private WM message;
-    private nuint wParam;
-    private nint lParam;
-    private uint time;
-    private Point pt;
-    private int lPrivate;
-}
 
-public enum WINDOW_LONG_PTR_INDEX
-{
-    GWL_EXSTYLE = -20,
-    GWLP_HINSTANCE = -6,
-    GWLP_HWNDPARENT = -8,
-    GWLP_ID = -12,
-    GWL_STYLE = -16,
-    GWLP_USERDATA = -21,
-    GWLP_WNDPROC = -4,
-    GWL_HINSTANCE = -6,
-    GWL_ID = -12,
-    GWL_USERDATA = -21,
-    GWL_WNDPROC = -4,
-    GWL_HWNDPARENT = -8,
-}
-
-public struct RECT
-{
-    private int left;
-    private int top;
-    private int right;
-    private int bottom;
-
-    public static RECT FromRectangle(Rectangle rectangle)
-    {
-        return new RECT
-        {
-            left = rectangle.Left,
-            top = rectangle.Top,
-            right = rectangle.Right + 1,
-            bottom = rectangle.Bottom + 1
-        };
-    }
-
-    public Rectangle ToRectangle() => Rectangle.FromLTRB(left, top, right - 1, bottom - 1);
-}
 
 // thanks dotnet/winforms
-public enum WM : uint
-{
+public enum WM : uint {
     NULL = 0x0000,
     CREATE = 0x0001,
     DESTROY = 0x0002,
@@ -592,45 +416,4 @@ public enum WM : uint
     REFLECT_CTLCOLOREDIT = REFLECT + CTLCOLOREDIT,
     REFLECT_CTLCOLORLISTBOX = REFLECT + CTLCOLORLISTBOX,
     REFLECT_CTLCOLORSTATIC = REFLECT + CTLCOLORSTATIC
-}
-
-public struct INITCOMMONCONTROLSEX
-{
-    public uint dwSize;
-    public INITCOMMONCONTROLSEX_ICC dwICC;
-}
-
-[Flags]
-public enum INITCOMMONCONTROLSEX_ICC : uint
-{
-    ICC_ANIMATE_CLASS = 0x00000080,
-    ICC_BAR_CLASSES = 0x00000004,
-    ICC_COOL_CLASSES = 0x00000400,
-    ICC_DATE_CLASSES = 0x00000100,
-    ICC_HOTKEY_CLASS = 0x00000040,
-    ICC_INTERNET_CLASSES = 0x00000800,
-    ICC_LINK_CLASS = 0x00008000,
-    ICC_LISTVIEW_CLASSES = 0x00000001,
-    ICC_NATIVEFNTCTL_CLASS = 0x00002000,
-    ICC_PAGESCROLLER_CLASS = 0x00001000,
-    ICC_PROGRESS_CLASS = 0x00000020,
-    ICC_STANDARD_CLASSES = 0x00004000,
-    ICC_TAB_CLASSES = 0x00000008,
-    ICC_TREEVIEW_CLASSES = 0x00000002,
-    ICC_UPDOWN_CLASS = 0x00000010,
-    ICC_USEREX_CLASSES = 0x00000200,
-    ICC_WIN95_CLASSES = 0x000000FF,
-}
-
-public unsafe struct ACTCTXW
-{
-    internal uint cbSize;
-    internal uint dwFlags;
-    internal char* lpSource;
-    internal ushort wProcessorArchitecture;
-    internal ushort wLangId;
-    internal char* lpAssemblyDirectory;
-    internal char* lpResourceName;
-    internal char* lpApplicationName;
-    internal nint hModule;
 }

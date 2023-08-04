@@ -1,26 +1,20 @@
-﻿using BigChungus.Interop;
-using BigChungus.Utils;
-using System.Runtime.InteropServices;
+﻿using BigChungus.Managed;
+using BigChungus.Common;
 
 namespace BigChungus.Windows;
 
-public class Form : Window
+public class OverlappedWindow : Window
 {
     private const string className = "Form";
-
-    private static unsafe void RegisterFormClass()
-    {
-        WindowClass.Register("Form", FormWndProc);
-    }
     
-    static unsafe Form()
+    static unsafe OverlappedWindow()
     {
-        RegisterFormClass();
+        WindowClass.Register(className, FormWndProc);
     }
 
     private static nint FormWndProc(WindowProcedureArgs args)
     {
-        var form = (Form)(windows.GetValueOrDefault(args.Handle) ?? createdWindows.Peek());
+        var form = (OverlappedWindow)(WindowManager.Current.GetWindow(args.Handle) ?? WindowManager.Current.GetCreatedWindow());
         return form.WndProc(args);
     }
 

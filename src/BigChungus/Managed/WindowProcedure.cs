@@ -1,7 +1,7 @@
-﻿using BigChungus.Interop;
-using System.Runtime.InteropServices;
+﻿using BigChungus.Common;
+using BigChungus.Unmanaged;
 
-namespace BigChungus.Utils;
+namespace BigChungus.Managed;
 
 public static class WindowProcedure
 {
@@ -37,19 +37,11 @@ public static class WindowProcedure
 
 public delegate nint WindowProcedureFunction(WindowProcedureArgs args);
 
-public struct WindowProcedureArgs
-{
-    public nint Handle { get; set; }
-    public WM Message { get; set; }
-    public nint WParam { get; set; }
-    public nint LParam { get; set; }
-    public WindowProcedureArgs(nint handle, WM message, nint wParam, nint lParam)
-    {
-        Handle = handle;
-        Message = message;
-        WParam = wParam;
-        LParam = lParam;
-    }
+public struct WindowProcedureArgs(nint handle, WM message, nint wParam, nint lParam) {
+    public nint Handle { get => handle; set => handle = value; }
+    public WM Message { get => message; set => message = value; }
+    public nint WParam { get => wParam; set => wParam = value; }
+    public nint LParam { get => lParam; set => lParam = value; }
 }
 
 internal class SubclassContext(nint handle, nint baseWndProcPtr, nint newWndProcPtr) : IDisposable

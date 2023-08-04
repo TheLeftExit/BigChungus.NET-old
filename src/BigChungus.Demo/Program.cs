@@ -1,17 +1,18 @@
-﻿using BigChungus.Interop;
-using BigChungus.Utils;
+﻿using BigChungus.Managed;
 using BigChungus.Windows;
+using BigChungus.Common;
 
 [assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
 
 Application.EnableVisualStyles();
-Application.SetFont("Segoe UI", -12);
+Application.LoadCommonControls();
+WindowManager.Current.SetFont("Segoe UI", -12);
 
 var mainWindow = new Form1();
 mainWindow.Show();
 Application.Run();
 
-public class Form1 : Form {
+public class Form1 : OverlappedWindow {
     Window button1;
     Window button2;
     IDisposable button1Subclass;
@@ -41,7 +42,7 @@ public class Form1 : Form {
         {
             if (args.Message == WM.LBUTTONUP)
             {
-                Application.SetFont("Comic Sans MS", -12);
+                WindowManager.Current.SetFont("Comic Sans MS", -12);
                 Text = "Subclassing successful";
             }
             return defWndProc(args);
@@ -62,7 +63,7 @@ public class Form1 : Form {
                 }
                 return 0;
             case WM.CLOSE:
-                Destroy();
+                Dispose();
                 break;
             case WM.DESTROY:
                 Application.Quit();

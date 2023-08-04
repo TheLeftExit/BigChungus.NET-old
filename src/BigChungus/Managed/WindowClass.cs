@@ -1,7 +1,7 @@
-﻿using BigChungus.Interop;
-using System.Runtime.InteropServices;
+﻿using BigChungus.Common;
+using BigChungus.Unmanaged;
 
-namespace BigChungus.Utils;
+namespace BigChungus.Managed;
 
 public static class WindowClass {
     public static unsafe IDisposable Register(ReadOnlySpan<char> className, WindowProcedureFunction windowProcedure, WNDCLASS_STYLES style = WNDCLASS_STYLES.CS_DBLCLKS | WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW, bool enableBackgroundBrush = true)

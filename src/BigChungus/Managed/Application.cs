@@ -1,7 +1,6 @@
-﻿using BigChungus.Interop;
-using BigChungus.Windows;
+﻿using BigChungus.Unmanaged;
 
-namespace BigChungus.Utils;
+namespace BigChungus.Managed;
 
 public static class Application
 {
@@ -58,43 +57,12 @@ public static class Application
         File.Delete(tempFilePath);
     }
 
-    private static nint currentFont;
-
-    public static unsafe void SetFont(string name, int size)
+    public static unsafe void LoadCommonControls()
     {
-        if (currentFont != 0)
+        PInvoke.InitCommonControlsEx(new INITCOMMONCONTROLSEX
         {
-            PInvoke.DeleteObject(currentFont);
-        }
-        fixed (char* namePtr = name)
-        {
-            var handle = PInvoke.CreateFont(
-                size,
-                default,
-                default,
-                default,
-                default,
-                default,
-                default,
-                default,
-                default,
-                default,
-                default,
-                default,
-                default,
-                namePtr
-            );
-            if (handle == default) throw new ApplicationException();
-            currentFont = handle;
-            Window.Broadcast(WM.SETFONT, (nuint)currentFont, 1);
-        }
-    }
-
-    internal static void OnWindowCreated(Window window)
-    {
-        if (currentFont != 0)
-        {
-            PInvoke.SendMessage(window.Handle, WM.SETFONT, (nuint)currentFont, 1);
-        }
+            dwSize = (uint)sizeof(INITCOMMONCONTROLSEX),
+            dwICC = INITCOMMONCONTROLSEX_ICC.ICC_WIN95_CLASSES
+        });
     }
 }
