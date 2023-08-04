@@ -25,18 +25,13 @@ public static class WindowProcedure
         PInvoke.SetWindowLongPtr(handle, WINDOW_LONG_PTR_INDEX.GWLP_WNDPROC, functionPtr);
     }
 
-    public static void Set<TDelegate>(nint handle, TDelegate function)
-    {
-        var functionPtr = Marshal.GetFunctionPointerForDelegate(function);
-        PInvoke.SetWindowLongPtr(handle, WINDOW_LONG_PTR_INDEX.GWLP_WNDPROC, functionPtr);
-    }
-
-    public static Subclass Subclass(nint handle, Func<WindowProcedureArgs, WindowProcedureFunction, nint> callback)
+    public static IDisposable Subclass(nint handle, Func<WindowProcedureArgs, WindowProcedureFunction, nint> callback)
     {
         nint baseWndProcPtr = Get(handle);
         WNDPROC newWndProc = (nint handle, WM message, nint wParam, nint lParam) => callback(new(handle, message, wParam, lParam), newArgs => Call(baseWndProcPtr, newArgs));
-        Set(handle, newWndProc);
-        return new(newWndProc, () => Set(handle, baseWndProcPtr));
+        nint newWndProcPtr = MarshaledDelegateStorage.Current.Add(newWndProc);
+        Set(handle, newWndProcPtr);
+        return new SubclassContext(handle, baseWndProcPtr, newWndProcPtr);
     }
 }
 
@@ -57,4 +52,11 @@ public struct WindowProcedureArgs
     }
 }
 
-public record struct Subclass(object NewProcedureReference, Action Remove);
+internal class SubclassContext(nint handle, nint baseWndProcPtr, nint newWndProcPtr) : IDisposable
+{
+    void IDisposable.Dispose()
+    {
+        WindowProcedure.Set(handle, baseWndProcPtr);
+        MarshaledDelegateStorage.Current.Remove(newWndProcPtr);
+    }
+}

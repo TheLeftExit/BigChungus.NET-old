@@ -14,7 +14,7 @@ Application.Run();
 public class Form1 : Form {
     Window button1;
     Window button2;
-    Subclass button1Subclass;
+    IDisposable button1Subclass;
 
     public Form1()
     {

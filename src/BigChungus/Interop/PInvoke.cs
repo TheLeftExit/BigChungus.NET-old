@@ -43,6 +43,10 @@ public static unsafe partial class PInvoke
     [LibraryImport("user32.dll", EntryPoint = "RegisterClassExW")]
     public static partial ushort RegisterClassEx(in WNDCLASSEXW wndClassEx);
 
+    [LibraryImport("user32.dll", EntryPoint = "UnregisterClassW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool UnregisterClass(char* lpClassName, nint hInstance);
+
     [LibraryImport("user32.dll", EntryPoint = "CreateWindowExW")]
     public static partial nint CreateWindowEx(WINDOW_EX_STYLE dwExStyle, char* lpClassName, char* lpWindowName, WINDOW_STYLE dwStyle, int X, int Y, int nWidth, int nHeight, nint hWndParent, nint hMenu, nint hInstance, void* lpParam);
 

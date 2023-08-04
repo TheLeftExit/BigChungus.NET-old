@@ -10,19 +10,7 @@ public class Form : Window
 
     private static unsafe void RegisterFormClass()
     {
-        fixed (char* classNamePtr = className)
-        {
-            var wndClassEx = new WNDCLASSEXW
-            {
-                cbSize = (uint)sizeof(WNDCLASSEXW),
-                style = WNDCLASS_STYLES.CS_DBLCLKS | WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW,
-                hbrBackground = PInvoke.GetSysColorBrush(SYS_COLOR_INDEX.COLOR_BTNFACE),
-                lpszClassName = classNamePtr,
-                lpfnWndProc = Marshal.GetFunctionPointerForDelegate<WNDPROC>(FormWndProc),
-                hInstance = Application.Handle
-            };
-            PInvoke.RegisterClassEx(wndClassEx);
-        }
+        WindowClass.Register("Form", FormWndProc);
     }
     
     static unsafe Form()
@@ -30,10 +18,10 @@ public class Form : Window
         RegisterFormClass();
     }
 
-    private static nint FormWndProc(nint hWnd, WM msg, nint wParam, nint lParam)
+    private static nint FormWndProc(WindowProcedureArgs args)
     {
-        var form = (Form)(windows.GetValueOrDefault(hWnd) ?? createdWindows.Peek());
-        return form.WndProc(new(hWnd, msg, wParam, lParam));
+        var form = (Form)(windows.GetValueOrDefault(args.Handle) ?? createdWindows.Peek());
+        return form.WndProc(args);
     }
 
     protected virtual nint WndProc(WindowProcedureArgs args)

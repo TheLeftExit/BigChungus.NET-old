@@ -8,6 +8,7 @@
 		<PublishAot>true</PublishAot>
 		<PlatformTarget>x64</PlatformTarget>
 		<LangVersion>preview</LangVersion>
+		
 		<PackageId>BigChungus.NET</PackageId>
 		<Title>BigChungus.NET</Title>
 		<Version>0.1.0</Version>
