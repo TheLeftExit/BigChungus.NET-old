@@ -1,8 +1,8 @@
 ﻿using BigChungus.Common;
-using BigChungus.Unmanaged;
+using BigChungus.Core.Interop;
 using System.Drawing;
 
-namespace BigChungus.Managed;
+namespace BigChungus.Core;
 
 public static class WindowCommon
 {
@@ -19,12 +19,14 @@ public static class WindowCommon
     public static Rectangle GetBounds(nint handle)
     {
         var returnValue = PInvoke.GetWindowRect(handle, out var result);
+        ReturnValueException.ThrowIf(nameof(PInvoke.GetWindowRect), returnValue is false);
         return result.ToRectangle();
     }
 
-    public static void SetBounds(nint handle, Rectangle newBounds)
+    public static void SetBounds(nint handle, Rectangle newBounds, bool repaint = true)
     {
-        PInvoke.MoveWindow(handle, newBounds.X, newBounds.Y, newBounds.Width, newBounds.Height, true);
+        var returnValue = PInvoke.MoveWindow(handle, newBounds.X, newBounds.Y, newBounds.Width, newBounds.Height, repaint);
+        ReturnValueException.ThrowIf(nameof(PInvoke.MoveWindow), returnValue is false);
     }
 
     public static int GetTextLength(nint handle)
@@ -52,7 +54,8 @@ public static class WindowCommon
     {
         fixed(char* ptr = text)
         {
-            PInvoke.SetWindowText(handle, ptr);
+            var returnValue = PInvoke.SetWindowText(handle, ptr);
+            ReturnValueException.ThrowIf(nameof(PInvoke.SetWindowText), returnValue is false);
         }
     }
 
@@ -93,12 +96,14 @@ public static class WindowCommon
 
     public static void Update(nint handle)
     {
-        PInvoke.UpdateWindow(handle);
+        var returnValue = PInvoke.UpdateWindow(handle);
+        ReturnValueException.ThrowIf(nameof(PInvoke.UpdateWindow), returnValue is false);
     }
 
     public static void Destroy(nint handle)
     {
-        PInvoke.DestroyWindow(handle);
+        var returnValue = PInvoke.DestroyWindow(handle);
+        ReturnValueException.ThrowIf(nameof(PInvoke.UpdateWindow), returnValue is false);
     }
 
     public static unsafe nint Create(ReadOnlySpan<char> className, WINDOW_EX_STYLE exStyle = default, WINDOW_STYLE style = default, ReadOnlySpan<char> windowName = default, int x = PInvoke.CW_USEDEFAULT, int y = PInvoke.CW_USEDEFAULT, int width = PInvoke.CW_USEDEFAULT, int height = PInvoke.CW_USEDEFAULT, nint parentHandle = default)
@@ -107,7 +112,7 @@ public static class WindowCommon
         {
             fixed (char* windowNamePtr = windowName)
             {
-                var handle = PInvoke.CreateWindowEx(
+                var returnValue = PInvoke.CreateWindowEx(
                     exStyle,
                     classNamePtr,
                     windowNamePtr,
@@ -121,7 +126,8 @@ public static class WindowCommon
                     Application.Handle,
                     default
                 );
-                return handle;
+                ReturnValueException.ThrowIf(nameof(PInvoke.CreateWindowEx), returnValue is 0);
+                return returnValue;
             }
         }
     }

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 [assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
 
-namespace BigChungus.Unmanaged;
+namespace BigChungus.Core.Interop;
 
 public static unsafe partial class PInvoke
 {

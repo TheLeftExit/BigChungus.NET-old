@@ -1,6 +1,6 @@
-﻿using BigChungus.Unmanaged;
+﻿using BigChungus.Core.Interop;
 
-namespace BigChungus.Managed;
+namespace BigChungus.Common;
 
 public static class Application
 {

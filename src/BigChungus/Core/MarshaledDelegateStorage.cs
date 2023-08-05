@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace BigChungus.Managed;
+namespace BigChungus.Core;
 
 public class MarshaledDelegateStorage {
     [ThreadStatic]

@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace BigChungus.Unmanaged;
+namespace BigChungus.Core.Interop;
 
 public delegate nint WNDPROC(nint hWnd, WM msg, nint wParam, nint lParam);
 

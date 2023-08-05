@@ -1,13 +1,13 @@
-﻿using BigChungus.Managed;
+﻿using BigChungus.Core;
 using System.Drawing;
 using BigChungus.Common;
+using BigChungus.Drawing;
 
 namespace BigChungus.Windows;
 
 public abstract class Window {
     public Window()
     {
-        WindowManager.Current.PreRegisterWindow(this);
         Handle = CreateHandle();
         WindowManager.Current.RegisterWindow(this);
     }
@@ -53,6 +53,16 @@ public abstract class Window {
     {
         get => WindowCommon.GetBounds(Handle);
         set => WindowCommon.SetBounds(Handle, value);
+    }
+
+    public Font Font {
+        get => DrawingObjectManager.Current.GetObject<Font>(WindowCommon.GetFont(Handle));
+        set => WindowCommon.SetFont(Handle, value.Handle);
+    }
+
+    public IDisposable Subclass(SubclassCallback callback)
+    {
+        return WindowProcedure.Subclass(Handle, callback);
     }
 }
 

@@ -1,10 +1,10 @@
 ﻿using BigChungus.Common;
-using BigChungus.Unmanaged;
+using BigChungus.Core.Interop;
 
-namespace BigChungus.Managed;
+namespace BigChungus.Core;
 
 public static class WindowClass {
-    public static unsafe IDisposable Register(ReadOnlySpan<char> className, WindowProcedureFunction windowProcedure, WNDCLASS_STYLES style = WNDCLASS_STYLES.CS_DBLCLKS | WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW, bool enableBackgroundBrush = true)
+    public static unsafe IDisposable Register(ReadOnlySpan<char> className, WindowCallback windowProcedure, WNDCLASS_STYLES style = WNDCLASS_STYLES.CS_DBLCLKS | WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW, bool enableBackgroundBrush = true)
     {
         fixed (char* classNamePtr = className)
         {
@@ -21,9 +21,10 @@ public static class WindowClass {
                 hInstance = Application.Handle
             };
 
-            var atom = PInvoke.RegisterClassEx(wndClassEx);
+            var returnValue = PInvoke.RegisterClassEx(wndClassEx);
+            ReturnValueException.ThrowIf(nameof(PInvoke.RegisterClassEx), returnValue == 0);
 
-            return new ClassContext(atom, wndProcPtr);
+            return new ClassContext(returnValue, wndProcPtr);
         }
     }
 }
@@ -31,7 +32,9 @@ public static class WindowClass {
 internal class ClassContext(ushort atom, nint wndProcPtr) : IDisposable {
     unsafe void IDisposable.Dispose()
     {
-        var result = PInvoke.UnregisterClass((char*)atom, Application.Handle);
+        var returnValue = PInvoke.UnregisterClass((char*)atom, Application.Handle);
+        ReturnValueException.ThrowIf(nameof(PInvoke.UnregisterClass), returnValue is false);
+
         MarshaledDelegateStorage.Current.Remove(wndProcPtr);
     }
 }

@@ -1,5 +1,15 @@
 ﻿namespace BigChungus.Common;
 
+public delegate nint WindowCallback(WindowProcedureArgs args);
+
+public delegate nint SubclassCallback(WindowProcedureArgs args, WindowCallback defaultFunction);
+
+public struct WindowProcedureArgs(nint handle, WM message, nint wParam, nint lParam) {
+    public nint Handle { get => handle; set => handle = value; }
+    public WM Message { get => message; set => message = value; }
+    public nint WParam { get => wParam; set => wParam = value; }
+    public nint LParam { get => lParam; set => lParam = value; }
+}
 
 [Flags]
 public enum WINDOW_EX_STYLE : uint {

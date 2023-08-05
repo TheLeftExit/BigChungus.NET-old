@@ -1,4 +1,4 @@
-﻿using BigChungus.Managed;
+﻿using BigChungus.Drawing;
 
 namespace BigChungus.Windows {
     public class WindowManager {
@@ -6,24 +6,16 @@ namespace BigChungus.Windows {
         private static WindowManager current;
         public static WindowManager Current => current ??= new WindowManager() {
             windows = new(),
-            windowCreationScopeStack = new()
         };
 
         private Dictionary<nint, Window> windows;
-        private Stack<Window> windowCreationScopeStack;
 
         public IEnumerable<Window> EnumerateWindows() => windows.Values;
 
-        internal void PreRegisterWindow(Window window)
-        {
-            windowCreationScopeStack.Push(window);
-        }
-
         internal void RegisterWindow(Window window)
         {
-            windowCreationScopeStack.Pop();
             windows.Add(window.Handle, window);
-            if (font != null) WindowCommon.SetFont(window.Handle, font.Handle);
+            window.Font = font;
         }
 
         internal void UnregisterWindow(Window window)
@@ -36,19 +28,13 @@ namespace BigChungus.Windows {
             return windows.TryGetValue(handle, out var window) ? window : null;
         }
 
-        internal Window GetCreatedWindow()
+        private Font font;
+        public void SetFont(Font newFont)
         {
-            return windowCreationScopeStack.Peek();
-        }
-
-        private FontHandle font;
-        public void SetFont(ReadOnlySpan<char> name, int size)
-        {
-            font?.Dispose();
-            font = new(name, size);
+            font = newFont;
             foreach(var window in EnumerateWindows())
             {
-                WindowCommon.SetFont(window.Handle, font.Handle);
+                window.Font = font;
             }
         }
     }

@@ -1,12 +1,12 @@
-﻿using BigChungus.Managed;
-using BigChungus.Windows;
+﻿using BigChungus.Windows;
 using BigChungus.Common;
+using BigChungus.Drawing;
 
 [assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
 
 Application.EnableVisualStyles();
 Application.LoadCommonControls();
-WindowManager.Current.SetFont("Segoe UI", -12);
+WindowManager.Current.SetFont(new Font("Segoe UI", -12));
 
 var mainWindow = new Form1();
 mainWindow.Show();
@@ -38,18 +38,18 @@ public class Form1 : OverlappedWindow {
             Parent = this
         };
 
-        button1Subclass = WindowProcedure.Subclass(button2.Handle, (args, defWndProc) =>
+        button1Subclass = button2.Subclass((args, defWndProc) =>
         {
             if (args.Message == WM.LBUTTONUP)
             {
-                WindowManager.Current.SetFont("Comic Sans MS", -12);
+                WindowManager.Current.SetFont(new Font("Comic Sans MS", -12));
                 Text = "Subclassing successful";
             }
             return defWndProc(args);
         });
     }
 
-    protected override nint WndProc(WindowProcedureArgs args)
+    protected override nint OnWindowMessage(WindowProcedureArgs args)
     {
         switch (args.Message)
         {
@@ -69,6 +69,6 @@ public class Form1 : OverlappedWindow {
                 Application.Quit();
                 break;
         }
-        return base.WndProc(args);
+        return base.OnWindowMessage(args);
     }
 }

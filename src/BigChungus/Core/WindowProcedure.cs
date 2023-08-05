@@ -1,7 +1,7 @@
 ﻿using BigChungus.Common;
-using BigChungus.Unmanaged;
+using BigChungus.Core.Interop;
 
-namespace BigChungus.Managed;
+namespace BigChungus.Core;
 
 public static class WindowProcedure
 {
@@ -25,7 +25,7 @@ public static class WindowProcedure
         PInvoke.SetWindowLongPtr(handle, WINDOW_LONG_PTR_INDEX.GWLP_WNDPROC, functionPtr);
     }
 
-    public static IDisposable Subclass(nint handle, Func<WindowProcedureArgs, WindowProcedureFunction, nint> callback)
+    public static IDisposable Subclass(nint handle, SubclassCallback callback)
     {
         nint baseWndProcPtr = Get(handle);
         WNDPROC newWndProc = (nint handle, WM message, nint wParam, nint lParam) => callback(new(handle, message, wParam, lParam), newArgs => Call(baseWndProcPtr, newArgs));
@@ -33,15 +33,6 @@ public static class WindowProcedure
         Set(handle, newWndProcPtr);
         return new SubclassContext(handle, baseWndProcPtr, newWndProcPtr);
     }
-}
-
-public delegate nint WindowProcedureFunction(WindowProcedureArgs args);
-
-public struct WindowProcedureArgs(nint handle, WM message, nint wParam, nint lParam) {
-    public nint Handle { get => handle; set => handle = value; }
-    public WM Message { get => message; set => message = value; }
-    public nint WParam { get => wParam; set => wParam = value; }
-    public nint LParam { get => lParam; set => lParam = value; }
 }
 
 internal class SubclassContext(nint handle, nint baseWndProcPtr, nint newWndProcPtr) : IDisposable

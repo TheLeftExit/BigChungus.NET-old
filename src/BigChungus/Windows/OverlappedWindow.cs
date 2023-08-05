@@ -1,4 +1,4 @@
-﻿using BigChungus.Managed;
+﻿using BigChungus.Core;
 using BigChungus.Common;
 
 namespace BigChungus.Windows;
@@ -14,17 +14,21 @@ public class OverlappedWindow : Window
 
     private static nint FormWndProc(WindowProcedureArgs args)
     {
-        var form = (OverlappedWindow)(WindowManager.Current.GetWindow(args.Handle) ?? WindowManager.Current.GetCreatedWindow());
-        return form.WndProc(args);
+        var form = (OverlappedWindow)WindowManager.Current.GetWindow(args.Handle);
+        form ??= OverlappedWindowManager.Current.Top;
+        return form.OnWindowMessage(args);
     }
 
-    protected virtual nint WndProc(WindowProcedureArgs args)
+    protected virtual nint OnWindowMessage(WindowProcedureArgs args)
     {
-        return WindowProcedure.Default(args);
+        return Core.WindowProcedure.Default(args);
     }
 
     protected override nint CreateHandle()
     {
-        return WindowCommon.Create(className, WINDOW_EX_STYLE.WS_EX_OVERLAPPEDWINDOW, WINDOW_STYLE.WS_OVERLAPPEDWINDOW);
+        using (var scope = OverlappedWindowManager.Current.CreateScope(this))
+        {
+            return WindowCommon.Create(className, WINDOW_EX_STYLE.WS_EX_OVERLAPPEDWINDOW, WINDOW_STYLE.WS_OVERLAPPEDWINDOW);
+        }
     }
 }
