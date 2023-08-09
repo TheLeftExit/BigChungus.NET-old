@@ -13,7 +13,7 @@ public abstract class DrawingObject : IDisposable {
 
     public nint Handle { get; }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         DrawingCommon.Delete(Handle);
         DrawingObjectManager.Current.UnregisterObject(this);

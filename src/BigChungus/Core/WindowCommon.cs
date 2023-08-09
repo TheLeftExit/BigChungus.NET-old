@@ -103,7 +103,7 @@ public static class WindowCommon
     public static void Destroy(nint handle)
     {
         var returnValue = PInvoke.DestroyWindow(handle);
-        ReturnValueException.ThrowIf(nameof(PInvoke.UpdateWindow), returnValue is false);
+        ReturnValueException.ThrowIf(nameof(PInvoke.DestroyWindow), returnValue is false);
     }
 
     public static unsafe nint Create(ReadOnlySpan<char> className, WINDOW_EX_STYLE exStyle = default, WINDOW_STYLE style = default, ReadOnlySpan<char> windowName = default, int x = PInvoke.CW_USEDEFAULT, int y = PInvoke.CW_USEDEFAULT, int width = PInvoke.CW_USEDEFAULT, int height = PInvoke.CW_USEDEFAULT, nint parentHandle = default)
@@ -123,7 +123,7 @@ public static class WindowCommon
                     height,
                     parentHandle,
                     default,
-                    Application.Handle,
+                    ApplicationCommon.Handle,
                     default
                 );
                 ReturnValueException.ThrowIf(nameof(PInvoke.CreateWindowEx), returnValue is 0);

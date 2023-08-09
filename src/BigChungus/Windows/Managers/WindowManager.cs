@@ -5,22 +5,21 @@ namespace BigChungus.Windows {
         [ThreadStatic]
         private static WindowManager current;
         public static WindowManager Current => current ??= new WindowManager() {
-            windows = new(),
+            windows = new()
         };
 
         private Dictionary<nint, Window> windows;
 
         public IEnumerable<Window> EnumerateWindows() => windows.Values;
 
-        internal void RegisterWindow(Window window)
+        public void RegisterWindow(Window window)
         {
             windows.Add(window.Handle, window);
-            window.Font = font;
         }
 
-        internal void UnregisterWindow(Window window)
+        public void UnregisterWindow(nint handle)
         {
-            windows.Remove(window.Handle);
+            windows.Remove(handle);
         }
 
         public Window GetWindow(nint handle)
@@ -28,13 +27,15 @@ namespace BigChungus.Windows {
             return windows.TryGetValue(handle, out var window) ? window : null;
         }
 
-        private Font font;
-        public void SetFont(Font newFont)
-        {
-            font = newFont;
-            foreach(var window in EnumerateWindows())
-            {
-                window.Font = font;
+        private Font defaultFont;
+        public Font DefaultFont {
+            get => defaultFont;
+            set {
+                defaultFont = value;
+                foreach(var window in EnumerateWindows())
+                {
+                    window.SetDefaultFont(defaultFont);
+                }
             }
         }
     }

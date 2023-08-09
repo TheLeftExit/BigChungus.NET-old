@@ -1,8 +1,9 @@
-﻿using BigChungus.Core;
+﻿using BigChungus.Common;
+using BigChungus.Core;
 
 namespace BigChungus.Windows;
 
-public class AnyWindow(string className) : Window
+public sealed class AnyWindow(string className) : Window
 {
     protected override nint CreateHandle()
     {

@@ -1,18 +1,17 @@
 ﻿using BigChungus.Windows;
 using BigChungus.Common;
 using BigChungus.Drawing;
+using BigChungus.Core;
 
 [assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
 
-Application.EnableVisualStyles();
-Application.LoadCommonControls();
-WindowManager.Current.SetFont(new Font("Segoe UI", -12));
+Application.DefaultFont = new Font("Segoe UI", -12);
 
 var mainWindow = new Form1();
 mainWindow.Show();
 Application.Run();
 
-public class Form1 : OverlappedWindow {
+public class Form1 : Form {
     Window button1;
     Window button2;
     IDisposable button1Subclass;
@@ -22,15 +21,16 @@ public class Form1 : OverlappedWindow {
         Text = "Hello world!";
         Bounds = new System.Drawing.Rectangle(10, 10, 300, 200);
 
-        button1 = new AnyWindow("BUTTON")
+        button1 = new Button
         {
             Text = "Click me!",
             Style = WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE,
             Bounds = new System.Drawing.Rectangle(50, 50, 120, 30),
-            Parent = this
+            Parent = this,
+            Font = new Font("Cascadia Mono", -12)
         };
 
-        button2 = new AnyWindow("BUTTON")
+        button2 = new Button
         {
             Text = "Don't click me!",
             Style = WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE,
@@ -42,14 +42,14 @@ public class Form1 : OverlappedWindow {
         {
             if (args.Message == WM.LBUTTONUP)
             {
-                WindowManager.Current.SetFont(new Font("Comic Sans MS", -12));
+                Application.DefaultFont = new Font("Comic Sans MS", -12);
                 Text = "Subclassing successful";
             }
             return defWndProc(args);
         });
     }
 
-    protected override nint OnWindowMessage(WindowProcedureArgs args)
+    protected override nint WndProc(WindowProcedureArgs args)
     {
         switch (args.Message)
         {
@@ -69,6 +69,6 @@ public class Form1 : OverlappedWindow {
                 Application.Quit();
                 break;
         }
-        return base.OnWindowMessage(args);
+        return base.WndProc(args);
     }
 }

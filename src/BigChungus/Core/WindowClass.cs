@@ -1,5 +1,6 @@
 ﻿using BigChungus.Common;
 using BigChungus.Core.Interop;
+using System.Reflection.Metadata;
 
 namespace BigChungus.Core;
 
@@ -18,7 +19,7 @@ public static class WindowClass {
                 hbrBackground = enableBackgroundBrush ? PInvoke.GetSysColorBrush(SYS_COLOR_INDEX.COLOR_BTNFACE) : default,
                 lpszClassName = classNamePtr,
                 lpfnWndProc = wndProcPtr,
-                hInstance = Application.Handle
+                hInstance = ApplicationCommon.Handle
             };
 
             var returnValue = PInvoke.RegisterClassEx(wndClassEx);
@@ -27,14 +28,53 @@ public static class WindowClass {
             return new ClassContext(returnValue, wndProcPtr);
         }
     }
+
+    public static unsafe IDisposable Superclass(ReadOnlySpan<char> baseClassName, ReadOnlySpan<char> newClassName, WindowCallback callback, out WindowCallback defaultCallback)
+    {
+        WNDCLASSEXW classInfo;
+        classInfo.cbSize = (uint)sizeof(WNDCLASSEXW);
+        fixed(char* baseClassNamePtr = baseClassName)
+        {
+            bool returnValue = PInvoke.GetClassInfoEx(ApplicationCommon.Handle, baseClassNamePtr, out classInfo);
+            ReturnValueException.ThrowIf(nameof(PInvoke.GetClassInfoEx), returnValue is false);
+        }
+
+        nint baseWndProcPtr = classInfo.lpfnWndProc;
+        defaultCallback = args => WindowProcedure.Call(baseWndProcPtr, args);
+        WNDPROC newWndProc = (nint handle, WM message, nint wParam, nint lParam) => callback(new(handle, message, wParam, lParam));
+        nint newWndProcPtr = MarshaledDelegateStorage.Current.Add(newWndProc);
+        classInfo.lpfnWndProc = newWndProcPtr;
+
+        ushort atom;
+
+        fixed (char* newClassNamePtr = newClassName)
+        {
+            classInfo.lpszClassName = newClassNamePtr;
+            var returnValue = PInvoke.RegisterClassEx(classInfo);
+            ReturnValueException.ThrowIf(nameof(PInvoke.RegisterClassEx), returnValue == 0);
+            atom = returnValue;
+        }
+
+        return new SuperclassContext(new(atom, baseWndProcPtr), newWndProcPtr);
+    }
 }
 
-internal class ClassContext(ushort atom, nint wndProcPtr) : IDisposable {
-    unsafe void IDisposable.Dispose()
+internal class ClassContext(ushort atom, nint wndProcPtr) : IDisposable
+{
+    public unsafe void Dispose()
     {
-        var returnValue = PInvoke.UnregisterClass((char*)atom, Application.Handle);
+        var returnValue = PInvoke.UnregisterClass((char*)atom, ApplicationCommon.Handle);
         ReturnValueException.ThrowIf(nameof(PInvoke.UnregisterClass), returnValue is false);
 
+        MarshaledDelegateStorage.Current.Remove(wndProcPtr);
+    }
+}
+
+internal class SuperclassContext(ClassContext classCtx, nint wndProcPtr) : IDisposable
+{
+    public unsafe void Dispose()
+    {
+        classCtx.Dispose();
         MarshaledDelegateStorage.Current.Remove(wndProcPtr);
     }
 }

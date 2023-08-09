@@ -1,21 +1,9 @@
 ﻿using BigChungus.Core.Interop;
 
-namespace BigChungus.Common;
+namespace BigChungus.Core;
 
-public static class Application
+public class ApplicationCommon
 {
-    public static void Run()
-    {
-        MSG message;
-        while (PInvoke.GetMessage(out message, 0, 0, 0) != 0)
-        {
-            PInvoke.TranslateMessage(message);
-            PInvoke.DispatchMessage(message);
-        }
-    }
-
-    public static void Quit() => PInvoke.PostQuitMessage(0);
-
     public static nint Handle => PInvoke.GetModuleHandleEx(2, 0, out var handle) ? handle : throw new ApplicationException();
 
     public static unsafe void EnableVisualStyles()

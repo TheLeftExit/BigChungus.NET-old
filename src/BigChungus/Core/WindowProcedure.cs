@@ -37,7 +37,7 @@ public static class WindowProcedure
 
 internal class SubclassContext(nint handle, nint baseWndProcPtr, nint newWndProcPtr) : IDisposable
 {
-    void IDisposable.Dispose()
+    public void Dispose()
     {
         WindowProcedure.Set(handle, baseWndProcPtr);
         MarshaledDelegateStorage.Current.Remove(newWndProcPtr);

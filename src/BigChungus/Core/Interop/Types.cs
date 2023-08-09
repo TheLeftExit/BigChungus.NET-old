@@ -24,13 +24,13 @@ public unsafe struct WNDCLASSEXW
 
 [StructLayout(LayoutKind.Sequential)]
 public struct MSG {
-    private nint hwnd;
-    private WM message;
-    private nuint wParam;
-    private nint lParam;
-    private uint time;
-    private Point pt;
-    private int lPrivate;
+    public nint hwnd;
+    public WM message;
+    public nint wParam;
+    public nint lParam;
+    public uint time;
+    public Point pt;
+    public int lPrivate;
 }
 
 public struct INITCOMMONCONTROLSEX {
