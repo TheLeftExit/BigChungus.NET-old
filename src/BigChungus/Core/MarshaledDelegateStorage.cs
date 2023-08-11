@@ -7,7 +7,7 @@ public class MarshaledDelegateStorage {
     private static MarshaledDelegateStorage current;
     public static MarshaledDelegateStorage Current => current ??= new() { delegatesByFunctionPointers = new() };
 
-    private Dictionary<nint, object> delegatesByFunctionPointers;
+    private Dictionary<nint, Delegate> delegatesByFunctionPointers;
 
     public nint Add<TDelegate>(TDelegate function) where TDelegate : Delegate
     {

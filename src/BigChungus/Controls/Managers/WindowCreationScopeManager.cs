@@ -1,4 +1,4 @@
-﻿namespace BigChungus.Windows; 
+﻿namespace BigChungus.Controls;
 internal class WindowCreationScopeManager
 {
     [ThreadStatic]
@@ -8,21 +8,21 @@ internal class WindowCreationScopeManager
         creationScopes = new()
     };
 
-    private Stack<Window> creationScopes { get; init; }
+    private Stack<Control> creationScopes { get; init; }
 
-    public Window Top => creationScopes.Peek();
+    public Control Top => creationScopes.Peek();
 
-    public WindowCreationScope CreateScope(Window window)
+    public WindowCreationScope CreateScope(Control window)
     {
         creationScopes.Push(window);
         return new WindowCreationScope();
     }
 
-    internal ref struct WindowCreationScope {
+    public ref struct WindowCreationScope
+    {
         public void Dispose()
         {
-            var window = Current.creationScopes.Pop();
-            // WindowManager.Current.RegisterWindow(window);
+            Current.creationScopes.Pop();
         }
     }
 }

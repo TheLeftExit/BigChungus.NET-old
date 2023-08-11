@@ -11,6 +11,11 @@ public struct WindowProcedureArgs(nint handle, WM message, nint wParam, nint lPa
     public nint LParam { get => lParam; set => lParam = value; }
 }
 
+public interface IWin32Object : IDisposable { 
+    public nint Handle { get; }
+    public bool IsDisposed { get; }
+}
+
 [Flags]
 public enum WINDOW_EX_STYLE : uint {
     WS_EX_DLGMODALFRAME = 0x00000001,

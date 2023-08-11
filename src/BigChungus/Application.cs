@@ -1,6 +1,6 @@
 ﻿using BigChungus.Core;
 using BigChungus.Drawing;
-using BigChungus.Windows;
+using BigChungus.Controls;
 
 namespace BigChungus.Common;
 
@@ -17,12 +17,20 @@ public static class Application
         MessageLoop.Run();
     }
 
+    public static void Run(Form mainForm)
+    {
+        mainForm.CloseBehavior = FormCloseBehavior.ExitApplication;
+        mainForm.Show();
+        MessageLoop.Run();
+    }
+
     public static void Quit()
     {
         MessageLoop.PostQuit();
     }
 
-    public static Font DefaultFont {
+    public static Font DefaultFont
+    {
         get => WindowManager.Current.DefaultFont;
         set => WindowManager.Current.DefaultFont = value;
     }

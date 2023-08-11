@@ -6,14 +6,18 @@ namespace BigChungus.Core;
 
 public static class WindowCommon
 {
+    public static nint SendMessage(WindowProcedureArgs args)
+    {
+        return PInvoke.SendMessage(args.Handle, args.Message, args.WParam, args.LParam);
+    }
     public static nint GetFont(nint handle)
     {
-        return PInvoke.SendMessage(handle, WM.GETFONT, 0, 0);
+        return SendMessage(new(handle, WM.GETFONT, 0, 0));
     }
 
     public static void SetFont(nint handle, nint fontHandle)
     {
-        PInvoke.SendMessage(handle, WM.SETFONT, fontHandle, 1);
+        SendMessage(new(handle, WM.SETFONT, fontHandle, 1));
     }
     
     public static Rectangle GetBounds(nint handle)

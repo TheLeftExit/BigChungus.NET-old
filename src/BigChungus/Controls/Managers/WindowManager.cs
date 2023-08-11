@@ -1,20 +1,23 @@
 ﻿using BigChungus.Drawing;
 
-namespace BigChungus.Windows {
-    public class WindowManager {
+namespace BigChungus.Controls
+{
+    internal class WindowManager
+    {
         [ThreadStatic]
         private static WindowManager current;
-        public static WindowManager Current => current ??= new WindowManager() {
+        public static WindowManager Current => current ??= new WindowManager()
+        {
             windows = new()
         };
 
-        private Dictionary<nint, Window> windows;
+        private Dictionary<nint, Control> windows;
 
-        public IEnumerable<Window> EnumerateWindows() => windows.Values;
+        public IEnumerable<Control> EnumerateWindows() => windows.Values;
 
-        public void RegisterWindow(Window window)
+        public void RegisterWindow(Control window, nint handle)
         {
-            windows.Add(window.Handle, window);
+            windows.Add(handle, window);
         }
 
         public void UnregisterWindow(nint handle)
@@ -22,17 +25,19 @@ namespace BigChungus.Windows {
             windows.Remove(handle);
         }
 
-        public Window GetWindow(nint handle)
+        public Control GetWindow(nint handle)
         {
             return windows.TryGetValue(handle, out var window) ? window : null;
         }
 
         private Font defaultFont;
-        public Font DefaultFont {
+        public Font DefaultFont
+        {
             get => defaultFont;
-            set {
+            set
+            {
                 defaultFont = value;
-                foreach(var window in EnumerateWindows())
+                foreach (var window in EnumerateWindows())
                 {
                     window.SetDefaultFont(defaultFont);
                 }

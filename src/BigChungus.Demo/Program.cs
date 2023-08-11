@@ -1,19 +1,17 @@
-﻿using BigChungus.Windows;
+﻿using BigChungus.Controls;
 using BigChungus.Common;
 using BigChungus.Drawing;
-using BigChungus.Core;
 
 [assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
 
 Application.DefaultFont = new Font("Segoe UI", -12);
 
-var mainWindow = new Form1();
-mainWindow.Show();
-Application.Run();
+Application.Run(new Form1());
 
-public class Form1 : Form {
-    Window button1;
-    Window button2;
+public class Form1 : Form
+{
+    Button button1;
+    Button button2;
     IDisposable button1Subclass;
 
     public Form1()
@@ -21,22 +19,28 @@ public class Form1 : Form {
         Text = "Hello world!";
         Bounds = new System.Drawing.Rectangle(10, 10, 300, 200);
 
-        button1 = new Button
+        button1 = new Button(this)
         {
             Text = "Click me!",
-            Style = WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE,
             Bounds = new System.Drawing.Rectangle(50, 50, 120, 30),
-            Parent = this,
+        };
+
+        button2 = new Button(this)
+        {
+            Text = "Don't click me!",
+            Bounds = new System.Drawing.Rectangle(50, 90, 120, 30),
             Font = new Font("Cascadia Mono", -12)
         };
 
-        button2 = new Button
+        button2.Clicked += button =>
         {
-            Text = "Don't click me!",
-            Style = WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE,
-            Bounds = new System.Drawing.Rectangle(50, 90, 120, 30),
-            Parent = this
+            Application.DefaultFont = new Font("Comic Sans MS", -12);
+            Text = "Subclassing successful";
         };
+
+        button1.Clicked += button => button.Text = "Good job!";
+
+        button2.Clicked += button => button2.Text = ">:(";
 
         button1Subclass = button2.Subclass((args, defWndProc) =>
         {
@@ -47,28 +51,5 @@ public class Form1 : Form {
             }
             return defWndProc(args);
         });
-    }
-
-    protected override nint WndProc(WindowProcedureArgs args)
-    {
-        switch (args.Message)
-        {
-            case WM.COMMAND:
-                if (args.LParam == button1.Handle)
-                {
-                    button1.Text = "Good job!";
-                } else if (args.LParam == button2.Handle)
-                {
-                    button2.Text = ">:(";
-                }
-                return 0;
-            case WM.CLOSE:
-                Dispose();
-                break;
-            case WM.DESTROY:
-                Application.Quit();
-                break;
-        }
-        return base.WndProc(args);
     }
 }

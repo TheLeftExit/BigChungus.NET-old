@@ -23,7 +23,7 @@ public static class WindowClass {
             };
 
             var returnValue = PInvoke.RegisterClassEx(wndClassEx);
-            ReturnValueException.ThrowIf(nameof(PInvoke.RegisterClassEx), returnValue == 0);
+            ReturnValueException.ThrowIf(nameof(PInvoke.RegisterClassEx), returnValue is 0);
 
             return new ClassContext(returnValue, wndProcPtr);
         }
@@ -51,7 +51,7 @@ public static class WindowClass {
         {
             classInfo.lpszClassName = newClassNamePtr;
             var returnValue = PInvoke.RegisterClassEx(classInfo);
-            ReturnValueException.ThrowIf(nameof(PInvoke.RegisterClassEx), returnValue == 0);
+            ReturnValueException.ThrowIf(nameof(PInvoke.RegisterClassEx), returnValue is 0);
             atom = returnValue;
         }
 

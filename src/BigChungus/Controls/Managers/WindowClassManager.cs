@@ -1,11 +1,10 @@
 ﻿using BigChungus.Common;
 using BigChungus.Core;
-using System.Collections.Concurrent;
-using System.Diagnostics;
 
-namespace BigChungus.Windows;
+namespace BigChungus.Controls;
 
-internal static class WindowClassManager {
+internal static class WindowClassManager
+{
     private static Dictionary<string, WindowClassDefinition> classes = new();
 
     public static (string ClassName, WindowCallback DefaultCallback) GetSuperclass(string baseClassName)
