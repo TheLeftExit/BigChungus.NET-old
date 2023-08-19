@@ -8,14 +8,14 @@ public class DrawingObjectManager
 
     private Dictionary<nint, DrawingObject> objects;
 
-    internal void RegisterObject(DrawingObject drawingObject)
+    internal void RegisterObject(DrawingObject drawingObject, nint handle)
     {
-        objects.Add(drawingObject.Handle, drawingObject);
+        objects.Add(handle, drawingObject);
     }
 
-    internal void UnregisterObject(DrawingObject drawingObject)
+    internal void UnregisterObject(nint handle)
     {
-        objects.Remove(drawingObject.Handle);
+        objects.Remove(handle);
     }
 
     public T GetObject<T>(nint handle) where T : DrawingObject

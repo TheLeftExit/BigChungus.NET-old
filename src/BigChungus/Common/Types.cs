@@ -11,6 +11,28 @@ public struct WindowProcedureArgs(nint handle, WM message, nint wParam, nint lPa
     public nint LParam { get => lParam; set => lParam = value; }
 }
 
+public abstract class Win32Object : IDisposable
+{
+    public nint Handle { get; }
+    public bool IsDisposed { get; protected set; }
+
+    public Win32Object()
+    {
+        Handle = CreateHandle();
+        IsDisposed = false;
+    }
+
+    protected abstract nint CreateHandle();
+    protected abstract void DestroyHandle();
+
+    public void Dispose()
+    {
+        if (IsDisposed) return;
+        DestroyHandle();
+        IsDisposed = true;
+    }
+}
+
 public interface IWin32Object : IDisposable { 
     public nint Handle { get; }
     public bool IsDisposed { get; }

@@ -3,24 +3,19 @@ using BigChungus.Core;
 
 namespace BigChungus.Drawing;
 
-public abstract class DrawingObject : IWin32Object {
-    public DrawingObject()
+public abstract class DrawingObject : Win32Object {
+    protected override nint CreateHandle()
     {
-        Handle = CreateHandle();
-        DrawingObjectManager.Current.RegisterObject(this);
+        var handle = CreateHandleBase();
+        DrawingObjectManager.Current.RegisterObject(this, handle);
+        return handle;
     }
 
-    protected abstract nint CreateHandle();
+    protected abstract nint CreateHandleBase();
 
-    public nint Handle { get; }
-
-    public bool IsDisposed { get; private set; } = false;
-
-    public virtual void Dispose()
+    protected override void DestroyHandle()
     {
-        if(IsDisposed) return;
         DrawingCommon.Delete(Handle);
-        DrawingObjectManager.Current.UnregisterObject(this);
-        IsDisposed = true;
+        DrawingObjectManager.Current.UnregisterObject(Handle);
     }
 }

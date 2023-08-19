@@ -5,24 +5,24 @@ namespace BigChungus.Drawing;
 
 public class Font(string name, int size) : DrawingObject {
 
-    protected override nint CreateHandle()
+    protected override nint CreateHandleBase()
     {
         return DrawingCommon.CreateFont(name, size);
     }
 
-    public override void Dispose()
+    protected override void DestroyHandle()
     {
-        if(WindowManager.Current.DefaultFont == this)
+        if (WindowManager.Current.DefaultFont == this)
         {
             WindowManager.Current.DefaultFont = null;
         }
-        foreach(var window in WindowManager.Current.EnumerateWindows())
+        foreach (var window in WindowManager.Current.EnumerateWindows())
         {
-            if(window.Font.Handle == Handle)
+            if (window.Font == this)
             {
                 window.Font = null;
             }
         }
-        base.Dispose();
+        base.DestroyHandle();
     }
 }

@@ -5,51 +5,60 @@ using BigChungus.Drawing;
 
 namespace BigChungus.Controls;
 
-public struct CreateParams
+public abstract class Control(Control parent) : Win32Object
 {
-    public string ClassName { get; set; }
-    public WINDOW_STYLE Style { get; set; }
-    public WINDOW_EX_STYLE ExStyle { get; set; }
-}
-
-public class Control : IWin32Object
-{
-    // Core
-
-    public Control(Control parent)
+    public struct WindowArgs
     {
-        using (WindowCreationScopeManager.Current.CreateScope(this))
+        public string ClassName { get; set; }
+        public WINDOW_STYLE Style { get; set; }
+        public WINDOW_EX_STYLE ExStyle { get; set; }
+    }
+
+    protected override nint CreateHandle()
+    {
+        var args = CreateWindowArgs();
+
+        if (string.IsNullOrEmpty(args.ClassName))
         {
-            var args = CreateParams;
-            if ((args.Style & WINDOW_STYLE.WS_CHILD) == WINDOW_STYLE.WS_CHILD) ArgumentNullException.ThrowIfNull(parent);
-            Handle = WindowCommon.Create(args.ClassName, args.ExStyle, args.Style, parentHandle: parent?.Handle ?? 0);
+            throw new ArgumentNullException(nameof(args.ClassName), $"{nameof(Control)} descendants must override {nameof(CreateWindowArgs)} and specify {nameof(WindowArgs.ClassName)}.");
         }
-    }
-
-    protected internal virtual nint WndProc(WindowProcedureArgs args)
-    {
-        return WindowProcedure.Default(args);
-    }
-    
-    protected virtual CreateParams CreateParams
-    {
-        get
+        if(args.Style.HasFlag(WINDOW_STYLE.WS_CHILD) && parent == null)
         {
-            return new()
+            throw new ArgumentNullException(nameof(parent));
+        }
+
+        var handle = WindowCommon.Create(args.ClassName, args.ExStyle, args.Style, parentHandle: parent?.Handle ?? 0);
+        SetDefaultFont(WindowManager.Current.DefaultFont, handle);
+
+        WindowManager.Current.RegisterWindow(this, handle);
+        WindowProcedure.Subclass(handle, (args, defWndProc) =>
+        {
+            var returnValue = defWndProc(args);
+            if (args.Message == WM.NCDESTROY)
             {
-                ClassName = WindowClassManager.GetCustomClass(),
-                Style = WINDOW_STYLE.WS_VISIBLE | WINDOW_STYLE.WS_CHILD,
-                ExStyle = default
-            };
-        }
+                WindowManager.Current.UnregisterWindow(handle);
+                IsDisposed = true;
+            }
+            return returnValue;
+        });
+
+        return handle;
     }
 
-    public nint Handle { get; }
-    public Control Parent { get; }
-
-    public IDisposable Subclass(SubclassCallback callback)
+    protected virtual WindowArgs CreateWindowArgs()
     {
-        return WindowProcedure.Subclass(Handle, callback);
+        return new()
+        {
+            Style = WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE
+        };
+    }
+
+    public Control Parent => parent;
+
+    protected override void DestroyHandle()
+    {
+        WindowCommon.Destroy(Handle);
+        WindowManager.Current.UnregisterWindow(Handle);
     }
 
     public static Control FromHandle(nint handle)
@@ -57,22 +66,9 @@ public class Control : IWin32Object
         return WindowManager.Current.GetWindow(handle);
     }
 
-    // Common functions
-
-    protected void ShowWindow(SHOW_WINDOW_CMD showMode) => WindowCommon.Show(Handle, showMode);
-
-    public void Hide() => ShowWindow(SHOW_WINDOW_CMD.SW_HIDE);
-    public void Show(bool alsoFocus = true) => ShowWindow(alsoFocus ? SHOW_WINDOW_CMD.SW_SHOW : SHOW_WINDOW_CMD.SW_SHOWNA);
+    public void Hide() => WindowCommon.Show(Handle, SHOW_WINDOW_CMD.SW_HIDE);
+    public void Show(bool alsoFocus = true) => WindowCommon.Show(Handle, alsoFocus ? SHOW_WINDOW_CMD.SW_SHOW : SHOW_WINDOW_CMD.SW_SHOWNA);
     public void Update() => WindowCommon.Update(Handle);
-
-    public bool IsDisposed { get; private set; } = false;
-
-    public void Dispose()
-    {
-        if (IsDisposed) return;
-        WindowCommon.Destroy(Handle);
-        IsDisposed = true;
-    }
 
     public string Text
     {
@@ -86,12 +82,11 @@ public class Control : IWin32Object
         set => WindowCommon.SetBounds(Handle, value);
     }
 
-    // Font
-
+    #region Font
     private Font controlFont;
-    internal void SetDefaultFont(Font newFont)
+    internal void SetDefaultFont(Font newFont, nint? windowHandle = null)
     {
-        if (controlFont == null) WindowCommon.SetFont(Handle, newFont?.Handle ?? default);
+        if (controlFont == null) WindowCommon.SetFont(windowHandle ?? Handle, newFont?.Handle ?? default);
     }
     public Font Font
     {
@@ -107,5 +102,6 @@ public class Control : IWin32Object
     {
         get => DrawingObjectManager.Current.GetObject<Font>(WindowCommon.GetFont(Handle));
     }
+    #endregion
 }
 

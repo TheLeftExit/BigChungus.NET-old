@@ -2,8 +2,12 @@
 
 namespace BigChungus.Controls;
 
-public class Button(Control parent) : CommonControl("Button", parent)
+public class Button(Control parent) : Control(parent)
 {
+    protected override WindowArgs CreateWindowArgs()
+    {
+        return base.CreateWindowArgs() with { ClassName = "Button" };
+    }
     internal void RaiseClicked()
     {
         Clicked?.Invoke(this);

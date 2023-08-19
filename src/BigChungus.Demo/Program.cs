@@ -1,6 +1,7 @@
 ﻿using BigChungus.Controls;
 using BigChungus.Common;
 using BigChungus.Drawing;
+using BigChungus.Core;
 
 [assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
 
@@ -42,7 +43,7 @@ public class Form1 : Form
 
         button2.Clicked += button => button2.Text = ">:(";
 
-        button1Subclass = button2.Subclass((args, defWndProc) =>
+        WindowProcedure.Subclass(button2.Handle, (args, defWndProc) =>
         {
             if (args.Message == WM.LBUTTONUP)
             {
