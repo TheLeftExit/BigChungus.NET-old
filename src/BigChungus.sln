@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.33808.371
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigChungus", "BigChungus\BigChungus.csproj", "{020D289B-FD26-46F0-AB48-0C844898E378}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BigChungus.Demo", "BigChungus.Demo\BigChungus.Demo.csproj", "{703FDD49-19AA-429A-92E8-1CC1295F25B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigChungus.Demo", "BigChungus.Demo\BigChungus.Demo.csproj", "{703FDD49-19AA-429A-92E8-1CC1295F25B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

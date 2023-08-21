@@ -1,56 +1,38 @@
-﻿using BigChungus.Controls;
-using BigChungus.Common;
-using BigChungus.Drawing;
-using BigChungus.Core;
+﻿using BigChungus.Managed;
+using BigChungus.Unmanaged.Libraries;
+using BigChungus.Unmanaged.Messages;
+using BigChungus.Unmanaged.WindowStyles;
 
 [assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
 
-Application.DefaultFont = new Font("Segoe UI", -12);
+Console.WriteLine("Hello world!");
 
-Application.Run(new Form1());
+ApplicationMethods.LoadCommonControls();
+ApplicationMethods.EnableVisualStyles();
 
-public class Form1 : Form
+InternalMethods.Register("BigChungusWindow", (hwnd, msg, wParam, lParam) =>
 {
-    Button button1;
-    Button button2;
-    IDisposable button1Subclass;
-
-    public Form1()
+    if(msg == WM.CLOSE)
     {
-        Text = "Hello world!";
-        Bounds = new System.Drawing.Rectangle(10, 10, 300, 200);
-
-        button1 = new Button(this)
-        {
-            Text = "Click me!",
-            Bounds = new System.Drawing.Rectangle(50, 50, 120, 30),
-        };
-
-        button2 = new Button(this)
-        {
-            Text = "Don't click me!",
-            Bounds = new System.Drawing.Rectangle(50, 90, 120, 30),
-            Font = new Font("Cascadia Mono", -12)
-        };
-
-        button2.Clicked += button =>
-        {
-            Application.DefaultFont = new Font("Comic Sans MS", -12);
-            Text = "Subclassing successful";
-        };
-
-        button1.Clicked += button => button.Text = "Good job!";
-
-        button2.Clicked += button => button2.Text = ">:(";
-
-        WindowProcedure.Subclass(button2.Handle, (args, defWndProc) =>
-        {
-            if (args.Message == WM.LBUTTONUP)
-            {
-                Application.DefaultFont = new Font("Comic Sans MS", -12);
-                Text = "Subclassing successful";
-            }
-            return defWndProc(args);
-        });
+        ApplicationMethods.PostQuit();
     }
-}
+    return User32.DefWindowProc(hwnd, msg, wParam, lParam);
+});
+
+
+ThreadStart applicationFunction = () =>
+{
+    var mainForm = InternalMethods.Create("BigChungusWindow", WS.OVERLAPPEDWINDOW, 0x00040300, default);
+    var button = InternalMethods.Create("Button", WS.CHILD | WS.VISIBLE | CCS.VERT | BS.COMMANDLINK, default, mainForm);
+    WindowMethods.SetBounds(button, new System.Drawing.Rectangle(10, 10, 300, 100));
+    WindowMethods.SetText(button, "Button!");
+    ButtonMethods.SetElevationRequiredState(button, true);
+    ButtonMethods.SetNote(button, "Note!");
+
+    User32.ShowWindow(mainForm, BigChungus.Unmanaged.SHOW_WINDOW_CMD.SW_SHOW);
+
+    ApplicationMethods.RunMessageLoop();
+};
+
+new Thread(applicationFunction).Start();
+applicationFunction();
