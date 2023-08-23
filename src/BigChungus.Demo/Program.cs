@@ -1,7 +1,7 @@
 ﻿using BigChungus.Managed;
+using BigChungus.Unmanaged;
 using BigChungus.Unmanaged.Libraries;
 using BigChungus.Unmanaged.Messages;
-using BigChungus.Unmanaged.WindowStyles;
 
 [assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
 
@@ -10,7 +10,7 @@ Console.WriteLine("Hello world!");
 ApplicationMethods.LoadCommonControls();
 ApplicationMethods.EnableVisualStyles();
 
-InternalMethods.Register("BigChungusWindow", (hwnd, msg, wParam, lParam) =>
+Internal.Register("BigChungusWindow", (hwnd, msg, wParam, lParam) =>
 {
     if(msg == WM.CLOSE)
     {
@@ -19,20 +19,16 @@ InternalMethods.Register("BigChungusWindow", (hwnd, msg, wParam, lParam) =>
     return User32.DefWindowProc(hwnd, msg, wParam, lParam);
 });
 
+var mainFormHandle = new FormArgs("BigChungusWindow").Create();
+var buttonHandle = new ButtonArgs(ButtonKind.CommandLink).Create(mainFormHandle);
 
-ThreadStart applicationFunction = () =>
-{
-    var mainForm = InternalMethods.Create("BigChungusWindow", WS.OVERLAPPEDWINDOW, 0x00040300, default);
-    var button = InternalMethods.Create("Button", WS.CHILD | WS.VISIBLE | CCS.VERT | BS.COMMANDLINK, default, mainForm);
-    WindowMethods.SetBounds(button, new System.Drawing.Rectangle(10, 10, 300, 100));
-    WindowMethods.SetText(button, "Button!");
-    ButtonMethods.SetElevationRequiredState(button, true);
-    ButtonMethods.SetNote(button, "Note!");
+var button = new Button(buttonHandle);
 
-    User32.ShowWindow(mainForm, BigChungus.Unmanaged.SHOW_WINDOW_CMD.SW_SHOW);
+button.AsWindow().SetBounds(new System.Drawing.Rectangle(10, 10, 300, 100));
+button.AsWindow().SetText("Button!");
+button.SetElevationRequiredState(true);
+button.SetNote("Note!");
 
-    ApplicationMethods.RunMessageLoop();
-};
+User32.ShowWindow(mainFormHandle, SHOW_WINDOW_CMD.SW_SHOW);
 
-new Thread(applicationFunction).Start();
-applicationFunction();
+ApplicationMethods.RunMessageLoop();

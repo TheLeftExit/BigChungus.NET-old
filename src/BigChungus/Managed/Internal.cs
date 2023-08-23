@@ -1,10 +1,13 @@
 ﻿using BigChungus.Unmanaged;
 using BigChungus.Unmanaged.Libraries;
+using BigChungus.Unmanaged.WindowStyles;
 
 namespace BigChungus.Managed;
 
-public static class InternalMethods
+public static class Internal
 {
+    public const uint BaseStyle = WS.CHILD | WS.VISIBLE;
+
     public static unsafe nint SendMessage<T>(nint hWnd, uint msg, nint wParam, ref T lParam) where T : unmanaged
     {
         fixed(T* ptr = &lParam) return User32.SendMessage(hWnd, msg, wParam, (nint)ptr);

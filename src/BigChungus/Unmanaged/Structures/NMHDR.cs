@@ -3,6 +3,6 @@
 public struct NMHDR
 {
     public nint hwndFrom;
-    public nuint idFrom;
+    public nint idFrom;
     public uint code;
 }
