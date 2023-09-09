@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
-namespace BigChungus.Unmanaged.Libraries;
+namespace BigChungus.Unmanaged;
 
 public static unsafe partial class User32
 {
@@ -22,11 +22,11 @@ public static unsafe partial class User32
     public static partial void PostQuitMessage(int nExitCode);
 
     [LibraryImport("user32.dll")]
-    public static partial nint GetSysColorBrush(SYS_COLOR_INDEX nIndex);
+    public static partial nint GetSysColorBrush(COLOR nIndex);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool ShowWindow(nint hWnd, SHOW_WINDOW_CMD nCmdShow);
+    public static partial bool ShowWindow(nint hWnd, SW nCmdShow);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -50,11 +50,8 @@ public static unsafe partial class User32
     [LibraryImport("user32.dll", EntryPoint = "CreateWindowExW")]
     public static partial nint CreateWindowEx(uint dwExStyle, char* lpClassName, char* lpWindowName, uint dwStyle, int X, int Y, int nWidth, int nHeight, nint hWndParent, nint hMenu, nint hInstance, void* lpParam);
 
-    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
-    public static partial nint GetWindowLongPtr(nint hWnd, WINDOW_LONG_PTR_INDEX nIndex);
-
-    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW")]
-    public static partial nint SetWindowLongPtr(nint hWnd, WINDOW_LONG_PTR_INDEX nIndex, long dwNewLong);
+    [LibraryImport("user32.dll")]
+    public static partial nint GetParent(nint hWnd);
 
     [LibraryImport("user32.dll", EntryPoint = "SetWindowTextW")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -87,4 +84,8 @@ public static unsafe partial class User32
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static unsafe partial bool IsWindowEnabled(nint hWnd);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static unsafe partial bool IsWindowVisible(nint hWnd);
 }

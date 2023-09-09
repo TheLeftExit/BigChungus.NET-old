@@ -1,4 +1,4 @@
-﻿using BigChungus.Unmanaged.Libraries;
+﻿using BigChungus.Unmanaged;
 
 namespace BigChungus.Managed;
 
@@ -8,7 +8,7 @@ public static class DrawingMethods
     {
         fixed (char* namePtr = name)
         {
-            var returnValue = Gdi32.CreateFont(
+            return Gdi32.CreateFont(
                 size,
                 default,
                 default,
@@ -23,15 +23,12 @@ public static class DrawingMethods
                 default,
                 default,
                 namePtr
-            );
-            ReturnValueException.ThrowIf(nameof(Gdi32.CreateFont), returnValue is 0);
-            return returnValue;
+            ).ThrowIf(0);
         }
     }
 
     public static unsafe void Delete(nint handle)
     {
-        var returnValue = Gdi32.DeleteObject(handle);
-        ReturnValueException.ThrowIf(nameof(Gdi32.DeleteObject), returnValue is false);
+        Gdi32.DeleteObject(handle).ThrowIfFalse();
     }
 }

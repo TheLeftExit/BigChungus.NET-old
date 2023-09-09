@@ -1,4 +1,4 @@
-﻿namespace BigChungus.Unmanaged.Messages;
+﻿namespace BigChungus.Unmanaged;
 
 public static class BM
 {
@@ -10,6 +10,7 @@ public static class BM
     public const uint CLICK = 0x00F5;
     public const uint GETIMAGE = 0x00F6;
     public const uint SETIMAGE = 0x00F7;
+    public const uint SETDONTCLICK = 0x00F8;
 }
 
 public static class BCM

@@ -1,4 +1,4 @@
-﻿namespace BigChungus.Unmanaged.WindowStyles;
+﻿namespace BigChungus.Unmanaged;
 
 public static class WS
 {

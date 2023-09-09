@@ -3,5 +3,5 @@
 public struct INITCOMMONCONTROLSEX
 {
     public uint dwSize;
-    public INITCOMMONCONTROLSEX_ICC dwICC;
+    public ICC dwICC;
 }

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace BigChungus.Unmanaged.Libraries;
+namespace BigChungus.Unmanaged;
 
 public static unsafe partial class Gdi32
 {

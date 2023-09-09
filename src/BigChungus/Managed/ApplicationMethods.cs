@@ -1,5 +1,4 @@
-﻿using BigChungus.Unmanaged.Libraries;
-using BigChungus.Unmanaged;
+﻿using BigChungus.Unmanaged;
 using System.Diagnostics;
 
 namespace BigChungus.Managed;
@@ -61,11 +60,10 @@ public static class ApplicationMethods
 
     public static unsafe void LoadCommonControls()
     {
-        bool returnValue = ComCtl32.InitCommonControlsEx(new INITCOMMONCONTROLSEX
+        ComCtl32.InitCommonControlsEx(new INITCOMMONCONTROLSEX
         {
             dwSize = (uint)sizeof(INITCOMMONCONTROLSEX),
-            dwICC = INITCOMMONCONTROLSEX_ICC.ICC_WIN95_CLASSES
-        });
-        if(!returnValue) throw new UnreachableException();
+            dwICC = ICC.WIN95_CLASSES
+        }).ThrowIfFalse();
     }
 }

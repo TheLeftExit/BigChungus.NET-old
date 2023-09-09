@@ -1,4 +1,4 @@
-﻿namespace BigChungus.Unmanaged.Messages;
+﻿namespace BigChungus.Unmanaged;
 
 public static class WM
 {

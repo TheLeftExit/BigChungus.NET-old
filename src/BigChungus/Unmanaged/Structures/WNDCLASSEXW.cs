@@ -3,7 +3,7 @@
 public unsafe struct WNDCLASSEXW
 {
     public uint cbSize;
-    public WNDCLASS_STYLES style;
+    public CS style;
     public nint lpfnWndProc;
     public int cbClsExtra;
     public int cbWndExtra;

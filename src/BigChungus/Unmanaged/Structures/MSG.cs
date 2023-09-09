@@ -9,6 +9,6 @@ public struct MSG
     public nint wParam;
     public nint lParam;
     public uint time;
-    public Point pt;
+    public POINT pt;
     public int lPrivate;
 }
