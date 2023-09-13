@@ -4,8 +4,6 @@ namespace BigChungus.Managed;
 
 public static class Internal
 {
-    public const uint BaseStyle = WS.CHILD | WS.VISIBLE;
-
     public static unsafe nint SendMessage_Ref<T>(this nint hWnd, uint msg, nint wParam, ref T lParam) where T : unmanaged
     {
         fixed(T* ptr = &lParam) return User32.SendMessage(hWnd, msg, wParam, (nint)ptr);
@@ -36,51 +34,77 @@ public static class Internal
         fixed (char* text = wParam) return User32.SendMessage(hWnd, msg, (nint)text, lParam);
     }
 
-    public static nint SendMessage(this nint hWnd, uint msg, nint wParam, nint lParam) => User32.SendMessage(hWnd, msg, wParam, lParam);
+    public static nint SendMessage(this nint hWnd, uint msg, nint wParam, nint lParam)
+    {
+        return User32.SendMessage(hWnd, msg, wParam, lParam);
+    }
+
+    public static string ToNullTerminatedString(this Span<char> span)
+    {
+        var nullTerminatorIndex = span.IndexOf('\0');
+        var slicedSpan = span.Slice(0, nullTerminatorIndex);
+        return new(slicedSpan);
+    }
+
+    public static unsafe nint Create(nint atom, uint style, uint exStyle, nint parentHandle)
+    {
+        var returnValue = User32.CreateWindowEx(
+            exStyle,
+            (char*)atom,
+            default,
+            style,
+            CW.USEDEFAULT,
+            CW.USEDEFAULT,
+            CW.USEDEFAULT,
+            CW.USEDEFAULT,
+            parentHandle,
+            default,
+            ApplicationMethods.GetApplicationHandle(),
+            default
+        ).ThrowIf(0);
+        return returnValue;
+    }
 
     public static unsafe nint Create(ReadOnlySpan<char> className, uint style, uint exStyle, nint parentHandle)
     {
         fixed (char* classNamePtr = className)
         {
-            var returnValue = User32.CreateWindowEx(
-                exStyle,
-                classNamePtr,
-                default,
-                style,
-                CW.USEDEFAULT,
-                CW.USEDEFAULT,
-                CW.USEDEFAULT,
-                CW.USEDEFAULT,
-                parentHandle,
-                default,
-                ApplicationMethods.GetApplicationHandle(),
-                default
-            ).ThrowIf(0);
-            return returnValue;
+            return Create((nint)classNamePtr, style, exStyle, parentHandle);
         }
     }
 
-    public static nint CreateEx(ReadOnlySpan<char> className, nint parentHandle, uint style = default, uint exStyle = default)
-    {
-        return Create(className, BaseStyle | style, exStyle, parentHandle);
-    }
-    public static unsafe void Register(ReadOnlySpan<char> className, WNDPROC windowProcedure)
+    public static unsafe ushort Register(ReadOnlySpan<char> className, WNDPROC windowProcedure)
     {
         fixed (char* classNamePtr = className)
         {
-            var wndProcPtr = MarshaledDelegateStorage.Current.Add(windowProcedure);
-
             var wndClassEx = new WNDCLASSEXW
             {
                 cbSize = (uint)sizeof(WNDCLASSEXW),
                 style = CS.HREDRAW | CS.VREDRAW,
                 hbrBackground = User32.GetSysColorBrush(COLOR.BTNFACE),
                 lpszClassName = classNamePtr,
-                lpfnWndProc = wndProcPtr,
+                lpfnWndProc = MarshaledDelegateStorage.Add(windowProcedure),
                 hInstance = ApplicationMethods.GetApplicationHandle()
             };
 
-            User32.RegisterClassEx(wndClassEx).ThrowIf((ushort)0);
+            return User32.RegisterClassEx(wndClassEx).ThrowIf<ushort>(0);
         }
+    }
+
+    public static unsafe void Unregister(ReadOnlySpan<char> className)
+    {
+        fixed (char* classNamePtr = className)
+        {
+            User32.GetClassInfoEx(ApplicationMethods.GetApplicationHandle(), classNamePtr, out var info);
+            User32.UnregisterClass(classNamePtr, ApplicationMethods.GetApplicationHandle()).ThrowIfFalse();
+            MarshaledDelegateStorage.Remove(info.lpfnWndProc);
+        }
+    }
+
+    public static unsafe void Unregister(ushort atom)
+    {
+        User32.GetClassInfoEx(ApplicationMethods.GetApplicationHandle(), (char*)atom, out var info);
+        User32.UnregisterClass((char*)atom, ApplicationMethods.GetApplicationHandle()).ThrowIfFalse();
+        MarshaledDelegateStorage.Remove(info.lpfnWndProc);
     }
 }

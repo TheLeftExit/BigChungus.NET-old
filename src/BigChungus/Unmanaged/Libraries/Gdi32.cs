@@ -2,7 +2,7 @@
 
 namespace BigChungus.Unmanaged;
 
-public static unsafe partial class Gdi32
+public static partial class Gdi32
 {
     [LibraryImport("gdi32.dll", EntryPoint = "CreateFontW")]
     public static unsafe partial nint CreateFont(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, uint bItalic, uint bUnderline, uint bStrikeOut, uint iCharSet, uint iOutPrecision, uint iClipPrecision, uint iQuality, uint iPitchAndFamily, char* pszFaceName);

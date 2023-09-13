@@ -2,7 +2,7 @@
 
 namespace BigChungus.Unmanaged;
 
-public static unsafe partial class Kernel32
+public static partial class Kernel32
 {
     [LibraryImport("kernel32.dll", EntryPoint = "GetModuleHandleExW")]
     [return: MarshalAs(UnmanagedType.Bool)]

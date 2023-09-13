@@ -27,7 +27,7 @@ public struct Message
         LParam = lParam;
     }
 
-    public unsafe bool TryDecode(out NMHDR header)
+    public unsafe bool TryParseNotification(out NMHDR header)
     {
         if (Code == WM.COMMAND)
         {
@@ -44,8 +44,18 @@ public struct Message
         return false;
     }
 
-    public unsafe ref T GetExtraInfo<T>() where T : unmanaged
+    public unsafe ref T DereferenceLParam<T>() where T : unmanaged
     {
         return ref Unsafe.AsRef<T>((void*)LParam);
+    }
+
+    public unsafe ref T DereferenceWParam<T>() where T : unmanaged
+    {
+        return ref Unsafe.AsRef<T>((void*)WParam);
+    }
+
+    public nint Default()
+    {
+        return User32.DefWindowProc(Handle, Code, WParam, LParam);
     }
 }

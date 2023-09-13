@@ -5,15 +5,19 @@
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<PlatformTarget>x64</PlatformTarget>
-		<PublishAot>true</PublishAot>
+
 		<UseLocalProjectReference>true</UseLocalProjectReference>
 
+		
+		<PublishAot>true</PublishAot>
+		
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
 		<IlcTrimMetadata>true</IlcTrimMetadata>
 		<IlcDisableReflection>true</IlcDisableReflection>
 		<IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
 		<IlcOptimizationPreference>Size</IlcOptimizationPreference>
+	
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(UseLocalProjectReference)'=='true'">

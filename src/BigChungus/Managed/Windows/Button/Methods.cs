@@ -2,10 +2,10 @@
 
 namespace BigChungus.Managed;
 
-public readonly partial record struct Button(nint Handle) : IWindow
+public readonly partial record struct Button(nint Handle) : ICommonControl<Button>
 {
     public Window Attributes => new Window(Handle);
-    public Button(nint parent, uint style) : this(Internal.Create("Button", Internal.BaseStyle | style, 0, parent)) { }
+    static string ICommonControl<Button>.ClassName => "Button";
 
     public SIZE GetIdealSize(int width = 0)
     {
@@ -34,7 +34,7 @@ public readonly partial record struct Button(nint Handle) : IWindow
     {
         Span<char> buffer = stackalloc char[GetNoteLength()];
         GetNote(buffer);
-        return new string(buffer);
+        return buffer.ToNullTerminatedString();
     }
 
     public BUTTON_SPLITINFO GetSplitInfo()

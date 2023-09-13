@@ -2,10 +2,10 @@
 
 namespace BigChungus.Managed;
 
-public readonly partial record struct Edit(nint Handle) : IWindow
+public readonly partial record struct Edit(nint Handle) : ICommonControl<Edit>
 {
     public Window Attributes => new Window(Handle);
-    public Edit(nint parent, uint style) : this(Internal.CreateEx("Edit", parent, style)) { }
+    static string ICommonControl<Edit>.ClassName => "Edit";
 
     public bool CanUndo(Span<char> buffer)
     {
